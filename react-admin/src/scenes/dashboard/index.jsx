@@ -17,12 +17,19 @@ import SsidChartIcon from "@mui/icons-material/SsidChart";
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const { data = [], token, queryForm, getBrach, getProducts, getCategory, products} = useBakeryStore();
+  const {
+    data = [],
+    token,
+    queryForm,
+    getBrach,
+    getProducts,
+    getCategory,
+    products,
+  } = useBakeryStore();
   const [totalSell, setTotalSell] = useState(null);
-  const dataLine = useBakeryStore((state)=>state.dataLine)
+  const dataLine = useBakeryStore((state) => state.dataLine);
 
   //Function....
-
 
   useEffect(() => {
     getBrach();
@@ -30,7 +37,6 @@ const Dashboard = () => {
     getCategory();
   }, [token]);
 
-  
   const fecthTotalSell = async () => {
     try {
       if (queryForm) {
@@ -64,7 +70,6 @@ const Dashboard = () => {
         gridAutoRows="140px"
         gap="20px"
       >
-
         {/* ROW 1 */}
         <Box
           gridColumn="span 3"
@@ -236,16 +241,16 @@ const Dashboard = () => {
           </Box>
           <Box height="250px" m="-20px 0 0 0">
             {dataLine && dataLine.length > 0 ? (
-              <LineChart isDashboard={true} dataLine={dataLine} products={products}/>
+              <LineChart
+                isDashboard={true}
+                dataLine={dataLine}
+                products={products}
+              />
             ) : (
-              <Typography
-              marginTop="80px"
-              variant="h2"
-              textAlign="center"
-              >No data available please select date first...</Typography>
-            )
-            }
-            
+              <Typography marginTop="80px" variant="h2" textAlign="center">
+                No data available please select date first...
+              </Typography>
+            )}
           </Box>
         </Box>
 
@@ -264,12 +269,24 @@ const Dashboard = () => {
             {data && data.length > 0 ? (
               <BarChart isDashboard={true} data={data} />
             ) : (
-              <Typography
-              variant="h2"
-              marginTop="80px"
-              >No data available please select date first...</Typography>
+              <Typography variant="h2" marginTop="80px">
+                No data available please select date first...
+              </Typography>
             )}
           </Box>
+        </Box>
+
+        {/* ROW 4 */}
+
+        <Box
+          gridColumn="span 6"
+          gridRow="span 4"
+          backgroundColor={colors.primary[400]}
+          textAlign="center"
+        >
+          <Typography variant="laoText" fontWeight="600">
+            ຍອດຂອງແຕ່ລະລາຍການທຸກສາຂາ
+          </Typography>
         </Box>
       </Box>
     </Box>
