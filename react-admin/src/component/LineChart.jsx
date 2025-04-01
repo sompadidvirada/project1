@@ -56,7 +56,7 @@ const LineChart = ({ isDashboard = false, dataLine }) => {
         yScale={{
           type: "linear",
           min: "auto",
-          max: "auto",
+          max: maxValue,
           stacked: true,
           reverse: false,
         }}

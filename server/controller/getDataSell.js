@@ -260,3 +260,52 @@ exports.getSellLineChart = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
+exports.getDataPieChart = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    // Convert startDate and endDate to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Ensure the full day is included
+
+    const ress = await prisma.trackingsell.findMany({
+      where: {
+        sellAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      include: {
+        product: true,
+      },
+    });
+
+    // Group by product name and sum the sellCount
+    const groupedData = ress.reduce((acc, curr) => {
+      const productName = curr.product.name;
+      if (!acc[productName]) {
+        acc[productName] = { label: productName, value: 0 };
+      }
+      acc[productName].value += curr.sellCount;
+      return acc;
+    }, {});
+
+    // Convert the grouped data into the desired format
+    const result = Object.keys(groupedData).map((productName, index) => {
+      const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`; // Random color
+      return {
+        id: productName, // id as product name
+        label: productName, // label as product name
+        value: groupedData[productName].value, // sum of sellCount for this product
+        color: randomColor, // random color
+      };
+    });
+
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong.` });
+  }
+};

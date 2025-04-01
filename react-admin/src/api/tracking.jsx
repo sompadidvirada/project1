@@ -85,3 +85,11 @@ export const getDataLineChart = (date, token) => {
     }
   })
 }
+
+export const getDataPieChart = (data, token) => {
+  return axios.post('http://localhost:5003/getdatapiechart', data, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+}

@@ -10,7 +10,6 @@ const BarChart = ({ isDashboard = false, data }) => {
   const { products = [], data: dataBar } = useBakeryStore();
   const productNames = products.map((product) => product.name);
 
-  console.log(dataBar)
 
   const productSecon = [" "]
 

@@ -9,8 +9,6 @@ import Invoice from "../scenes/category_brach/category_brach";
 import Form from "../scenes/form";
 import FAQ from "../scenes/faq";
 import Bar from "../scenes/bar/Bar";
-import PieChart from "../component/PieChart";
-import LineChart from "../component/LineChart";
 import GeographyChart from "../component/GeographyChart";
 import Login from "../scenes/authen/Login";
 import Singin from "../scenes/authen/Singin";
@@ -23,6 +21,7 @@ import Tracksell from "../scenes/work/tracksell";
 import Line from "../scenes/line/Line";
 import ProtectUser from "./ProtectUser";
 import LayoutUser from "../scenes/layout/LayoutUser";
+import Pie from "../scenes/pie/Pie";
 
 const router = createBrowserRouter([
   {
@@ -53,7 +52,7 @@ const router = createBrowserRouter([
       { path: "calendar", element: <Calendar /> },
       { path: "faq", element: <FAQ /> },
       { path: "bar", element: <Bar /> },
-      { path: "pie", element: <PieChart /> },
+      { path: "pie", element: <Pie /> },
       { path: "line", element: <Line /> },
       { path: "geography", element: <GeographyChart /> }
     ],

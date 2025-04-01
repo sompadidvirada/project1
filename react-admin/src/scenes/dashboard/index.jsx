@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
+import PieChart from "../../component/PieChart";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -28,6 +29,7 @@ const Dashboard = () => {
   } = useBakeryStore();
   const [totalSell, setTotalSell] = useState(null);
   const dataLine = useBakeryStore((state) => state.dataLine);
+  const dataPie = useBakeryStore((state) => state.dataPie);
 
   //Function....
 
@@ -279,7 +281,7 @@ const Dashboard = () => {
         {/* ROW 4 */}
 
         <Box
-          gridColumn="span 6"
+          gridColumn="span 12"
           gridRow="span 4"
           backgroundColor={colors.primary[400]}
           textAlign="center"
@@ -287,6 +289,15 @@ const Dashboard = () => {
           <Typography variant="laoText" fontWeight="600">
             ຍອດຂອງແຕ່ລະລາຍການທຸກສາຂາ
           </Typography>
+          <Box height="100%" mt="-20px">
+            {dataPie && dataPie?.length > 0 ? (
+              <PieChart isDashboard={true} dataPie={dataPie} />
+            ) : (
+              <Typography variant="h2" marginTop="80px">
+                No data available please select date first...
+              </Typography>
+            )}
+          </Box>
         </Box>
       </Box>
     </Box>
