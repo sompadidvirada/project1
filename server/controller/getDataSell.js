@@ -92,9 +92,6 @@ exports.getTotalSell = async (req, res) => {
     prevStart.setDate(prevStart.getDate() - shiftDays - 1); // Shift startDate by the number of days between start and end
     prevEnd.setDate(prevEnd.getDate() - shiftDays - 1); // Shift endDate by the same number of days minus 1 day for the previous period
 
-    // Log to see the calculated previous range
-    console.log("prevStart in UTC:", prevStart.toISOString());
-    console.log("prevEnd in UTC:", prevEnd.toISOString());
 
     // Use aggregate to sum the sellCount for the current period
     const totalSell = await prisma.trackingsell.aggregate({
@@ -122,8 +119,6 @@ exports.getTotalSell = async (req, res) => {
       },
     });
 
-    // Log to check the result of the previous period query
-    console.log("Total Sell Backward:", totalSellBackward);
 
     const totalSend = await prisma.trackingsend.aggregate({
       where: {

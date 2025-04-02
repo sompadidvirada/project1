@@ -13,7 +13,6 @@ exports.authCheck = async (req, res, next) => {
         const decode = jwt.verify(token, process.env.SECRET)
         req.user = decode
 
-        console.log('req.user',req.user)
         const user = await prisma.user.findFirst({
             where: {
                 phonenumber: req.user.phonenumber
@@ -34,7 +33,6 @@ exports.adminCheck = async (req, res, next) => {
     try {
 
         const { phonenumber } = req.user
-        console.log(phonenumber)
         if (!phonenumber || phonenumber === "") {
             return res.status(400).json({message: 'Something went wrong.'})
         }
@@ -42,7 +40,6 @@ exports.adminCheck = async (req, res, next) => {
         const adminUser = await prisma.user.findFirst({
             where: { phonenumber: phonenumber }
         })
-        console.log('log admin check',adminUser)
 
         if (!adminUser || adminUser.role !== 'admin') {
             return res.status(403).json({ message: 'Acess Denied: Admin Only' })
