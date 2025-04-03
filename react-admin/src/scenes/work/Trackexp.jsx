@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Dialog,
   DialogContent,
   IconButton,
@@ -13,7 +14,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import SelectBrach from "./component/SelectBrarch";
-import { checkTrackExp, trackexp } from "../../api/tracking";
+import { checkTrackExp, deleteAllTrackEXP, trackexp } from "../../api/tracking";
 import SnackbarNotification from "../../component/SneakerBar";
 import CalendarExp from "./component/CalendarExp";
 import DialogExp from "./component/DialogExp";
@@ -276,7 +277,21 @@ const Trackexp = () => {
     fetchDateBrachCheck();
   }, [selectDateBrachCheck.brachId, selectDateBrachCheck.expDate, token]);
 
-  console.log(selectFormtracksell);
+
+    const handeDeleteAll = async () => {
+      try {
+        await deleteAllTrackEXP(selectDateBrachCheck, token);
+        setSeverity("success");
+        setSnackbarMessage("Delete All Track Success.");
+        setOpenSnackbar(true);
+        fetchDateBrachCheck();
+      } catch (err) {
+        console.log(err);
+        setSeverity("error");
+        setSnackbarMessage("can'it delete.");
+        setOpenSnackbar(true);
+      }
+    };
 
   //Return zone...........................
 
@@ -322,6 +337,13 @@ const Trackexp = () => {
                 setSelectFormtracksell={setSelectFormtracksell}
                 setSelectDateBrachCheck={setSelectDateBrachCheck}
               />
+            </Box>
+            <Box>
+              <Button variant="contained" onClick={handeDeleteAll}>
+                <Typography variant="laoText">
+                  Clear for today
+                </Typography>
+              </Button>
             </Box>
           </Box>
         </Box>

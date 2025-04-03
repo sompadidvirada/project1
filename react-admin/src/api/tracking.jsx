@@ -93,3 +93,27 @@ export const getDataPieChart = (data, token) => {
     },
   });
 };
+
+export const deleteAllTrackSell = (form, token) => {
+  return axios.post("http://localhost:5003/deletealltracksell", form, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteAllTrackSend = (form, token) => {
+  return axios.post("http://localhost:5003/deletealltracksend", form, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const deleteAllTrackEXP = (form, token) => {
+  return axios.post("http://localhost:5003/deletealltrackexp", form, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

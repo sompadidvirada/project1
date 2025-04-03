@@ -314,14 +314,12 @@ exports.updateTrackExp = async (req, res) => {
   try {
     const { expAt, productId, brachId, expCount } = req.body;
 
-
     // Set range for the whole day
     const startOfDay = new Date(expAt);
     startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(expAt);
     endOfDay.setHours(23, 59, 59, 999);
-
 
     const ress = await prisma.trackingexp.updateMany({
       where: {
@@ -337,6 +335,96 @@ exports.updateTrackExp = async (req, res) => {
       },
     });
     res.send(ress);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong 500.` });
+  }
+};
+
+exports.deleteTrackSell = async (req, res) => {
+  try {
+    const { sellDate, brachId } = req.body;
+
+    if (!sellDate || !brachId) {
+      return res.status(400).json({ message: `Missing Data.` });
+    }
+
+    const startOfDay = new Date(sellDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(sellDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    await prisma.trackingsell.deleteMany({
+      where: {
+        brachId: Number(brachId),
+        sellAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+    res.send(`Delete The Tracking Success.`);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong 500.` });
+  }
+};
+
+exports.deleteTrackSend = async (req, res) => {
+  try {
+    const { sendDate, brachId } = req.body;
+
+    if (!sendDate || !brachId) {
+      return res.status(400).json({ message: `Missing Data.` });
+    }
+
+    const startOfDay = new Date(sendDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(sendDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    await prisma.trackingsend.deleteMany({
+      where: {
+        brachId: Number(brachId),
+        sendAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+    res.send(`Delete The Tracking Success.`);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong 500.` });
+  }
+};
+
+exports.deleteTrackEXP = async (req, res) => {
+  try {
+    const { expDate, brachId } = req.body;
+
+    if (!expDate || !brachId) {
+      return res.status(400).json({ message: `Missing Data.` });
+    }
+
+    const startOfDay = new Date(expDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(expDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    await prisma.trackingexp.deleteMany({
+      where: {
+        brachId: Number(brachId),
+        expAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+    });
+    res.send(`Delete The Tracking Success.`);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `Something went wrong 500.` });
