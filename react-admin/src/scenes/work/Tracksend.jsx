@@ -243,7 +243,7 @@ const Tracksend = () => {
       // **Update checked state with new entry**
       setChecked((prevChecked) => [
         ...prevChecked,
-        { productId, sellCount: sellCounts[productId] },
+        { productId, sendCount: sellCounts[productId] },
       ]);
 
       setSeverity("success");

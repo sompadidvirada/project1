@@ -246,7 +246,7 @@ const Trackexp = () => {
       // **Update checked state with new entry**
       setChecked((prevChecked) => [
         ...prevChecked,
-        { productId, sellCount: sellCounts[productId] },
+        { productId, expCount: sellCounts[productId] },
       ]);
 
       setSeverity("success");

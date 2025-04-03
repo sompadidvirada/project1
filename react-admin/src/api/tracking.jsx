@@ -46,24 +46,24 @@ export const checkTrackExp = (form, token) => {
   });
 };
 
-export const updateTrackSell = (id, form, token) => {
-  return axios.put("http://localhost:5003/updatetracksell/" + id, form, {
+export const updateTrackSell = (form, token) => {
+  return axios.post("http://localhost:5003/updatetracksell", form, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
 
-export const updateTrackSend = (id, form, token) => {
-  return axios.put("http://localhost:5003/updatetracksend/" + id, form, {
+export const updateTrackSend = (form, token) => {
+  return axios.post("http://localhost:5003/updatetracksend", form, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 };
 
-export const updateTrackExp = (id, form, token) => {
-  return axios.put("http://localhost:5003/updatetrackexp/" + id, form, {
+export const updateTrackExp = (form, token) => {
+  return axios.post("http://localhost:5003/updatetrackexp", form, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -71,25 +71,25 @@ export const updateTrackExp = (id, form, token) => {
 };
 
 export const getTotalSell = (date, token) => {
-  return axios.post('http://localhost:5003/totalsell', date, {
+  return axios.post("http://localhost:5003/totalsell", date, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-}
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 export const getDataLineChart = (date, token) => {
-  return axios.post('http://localhost:5003/getdataline', date, {
+  return axios.post("http://localhost:5003/getdataline", date, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-}
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 
 export const getDataPieChart = (data, token) => {
-  return axios.post('http://localhost:5003/getdatapiechart', data, {
+  return axios.post("http://localhost:5003/getdatapiechart", data, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-}
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -19,8 +19,8 @@ router.post("/trackexp", authCheck, trackexp);
 router.post("/checktracksell", authCheck, checkTrackSell);
 router.post("/checktracksend", authCheck, checkTrackSend);
 router.post("/checktrackexp", authCheck, checkTrackExp);
-router.put("/updatetracksell/:id", authCheck, updateTrackSell);
-router.put("/updatetracksend/:id", authCheck, updateTrackSend);
-router.put("/updatetrackexp/:id", authCheck, updateTrackExp);
+router.post("/updatetracksell", authCheck, updateTrackSell);
+router.post("/updatetracksend", authCheck, updateTrackSend);
+router.post("/updatetrackexp", authCheck, updateTrackExp);
 
 module.exports = router;

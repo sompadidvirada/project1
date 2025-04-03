@@ -23,9 +23,9 @@ export default function DialogSend({
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState("");
   const [severity, setSeverity] = React.useState("success"); // "success" or "error"
-  const token = useBakeryStore((state)=>state.token)
+  const token = useBakeryStore((state) => state.token);
   const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
+  const colors = tokens(theme.palette.mode);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -45,25 +45,35 @@ export default function DialogSend({
     const updatedForm = {
       ...selectFormtracksell,
       productId,
-      sendCount: editCount.sellCount,
+      sendCount: editCount.sendCount,
     };
 
     try {
-      const res = await updateTrackSend(trackedProduct.id, updatedForm, token);
-      setSeverity("success")
-      setSnackbarMessage("Update Success")
-      setOpenSnackbar(true)
+      const res = await updateTrackSend(updatedForm, token);
+      setSeverity("success");
+      setSnackbarMessage("Update Success");
+      setOpenSnackbar(true);
+      fetchDateBrachCheck(); // Refresh the data
+      handleClose();
     } catch (err) {
-      console.log(err);
+      console.error("Update Error:", err);
+      setSeverity("error");
+      setSnackbarMessage("Failed to update track sell.");
+      setOpenSnackbar(true);
     }
-    setEditCount("");
-    fetchDateBrachCheck();
-    handleClose();
   };
 
   return (
-      <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen} sx={{color: colors.blueAccent[200], backgroundColor: colors.blueAccent[700], ml: "10px"}}>
+    <React.Fragment>
+      <Button
+        variant="outlined"
+        onClick={handleClickOpen}
+        sx={{
+          color: colors.blueAccent[200],
+          backgroundColor: colors.blueAccent[700],
+          ml: "10px",
+        }}
+      >
         Edit
       </Button>
       <Dialog
@@ -95,8 +105,12 @@ export default function DialogSend({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} sx={{ bgcolor: colors.grey[100],}}>Cancel</Button>
-          <Button type="submit" sx={{ bgcolor: colors.grey[100],}}>Submit</Button>
+          <Button onClick={handleClose} sx={{ bgcolor: colors.grey[100] }}>
+            Cancel
+          </Button>
+          <Button type="submit" sx={{ bgcolor: colors.grey[100] }}>
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
       {/* Snackbar for success message */}
@@ -107,6 +121,5 @@ export default function DialogSend({
         onClose={() => setOpenSnackbar(false)}
       />
     </React.Fragment>
-    
   );
 }

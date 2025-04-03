@@ -108,7 +108,7 @@ exports.tracksend = async (req, res) => {
 exports.trackexp = async (req, res) => {
   try {
     const { expCount, expAt, userId, productId, brachId } = req.body;
-    console.log(req.body)
+    console.log(req.body);
 
     if (!expCount || !expAt || !brachId || !userId || !productId) {
       return res.status(400).json({ message: "something went wrong." });
@@ -251,17 +251,23 @@ exports.checkTrackExp = async (req, res) => {
 
 exports.updateTrackSell = async (req, res) => {
   try {
-    const { id } = req.params;
     const { sellAt, productId, brachId, sellCount } = req.body;
 
-    const formattedsellAt = parseISO(sellAt);
+    // Set range for the whole day
+    const startOfDay = new Date(sellAt);
+    startOfDay.setHours(0, 0, 0, 0);
 
-    const ress = await prisma.trackingsell.update({
+    const endOfDay = new Date(sellAt);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const ress = await prisma.trackingsell.updateMany({
       where: {
-        id: Number(id),
         productId: Number(productId),
-        sellAt: formattedsellAt,
         brachId: Number(brachId),
+        sellAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
       },
       data: {
         sellCount: Number(sellCount),
@@ -273,19 +279,26 @@ exports.updateTrackSell = async (req, res) => {
     return res.status(500).json({ message: `Something went wrong 500.` });
   }
 };
+
 exports.updateTrackSend = async (req, res) => {
   try {
-    const { id } = req.params;
     const { sendAt, productId, brachId, sendCount } = req.body;
 
-    const formattedsendAt = parseISO(sendAt);
+    // Set range for the whole day
+    const startOfDay = new Date(sendAt);
+    startOfDay.setHours(0, 0, 0, 0);
 
-    const ress = await prisma.trackingsend.update({
+    const endOfDay = new Date(sendAt);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const ress = await prisma.trackingsend.updateMany({
       where: {
-        id: Number(id),
         productId: Number(productId),
-        sendAt: formattedsendAt,
         brachId: Number(brachId),
+        sendAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
       },
       data: {
         sendCount: Number(sendCount),
@@ -299,17 +312,25 @@ exports.updateTrackSend = async (req, res) => {
 };
 exports.updateTrackExp = async (req, res) => {
   try {
-    const { id } = req.params;
     const { expAt, productId, brachId, expCount } = req.body;
 
-    const formattedExpAt = parseISO(expAt);
 
-    const ress = await prisma.trackingexp.update({
+    // Set range for the whole day
+    const startOfDay = new Date(expAt);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(expAt);
+    endOfDay.setHours(23, 59, 59, 999);
+
+
+    const ress = await prisma.trackingexp.updateMany({
       where: {
-        id: Number(id),
         productId: Number(productId),
-        expAt: formattedExpAt,
         brachId: Number(brachId),
+        expAt: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
       },
       data: {
         expCount: Number(expCount),
@@ -321,4 +342,3 @@ exports.updateTrackExp = async (req, res) => {
     return res.status(500).json({ message: `Something went wrong 500.` });
   }
 };
-
