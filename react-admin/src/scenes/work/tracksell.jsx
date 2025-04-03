@@ -163,17 +163,26 @@ const Tracksell = () => {
           <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
             <input
               type="number"
+              min="0"
               value={sellCounts[productId] || ""}
-              onChange={(e) => handleChange(productId, e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleSetSellCount(productId)
+              onChange={(e) =>
+                handleChange(productId, Math.max(0, e.target.value))
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSetSellCount(productId);
+                if (e.key === "ArrowUp" || e.key === "ArrowDown")
+                  e.preventDefault(); // Prevent up/down arrows
+              }}
+              onWheel={(e) => e.target.blur()} // Prevent scroll
               style={{
                 width: "60px",
                 padding: "5px",
                 borderRadius: "4px",
                 border: "1px solid #ccc",
                 textAlign: "center",
+                appearance: "textfield", // Hides arrows in most browsers
+                MozAppearance: "textfield", // Hides arrows in Firefox
+                WebkitAppearance: "none", // Hides arrows in WebKit browsers (Chrome, Safari)
               }}
             />
             <button

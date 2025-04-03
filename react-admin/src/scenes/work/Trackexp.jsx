@@ -9,24 +9,12 @@ import {
 import React, { useEffect, useState } from "react";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
-import Calendar from "./component/Calendar";
-import SelectBrarch from "./component/SelectBrarch";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import SelectBrach from "./component/SelectBrarch";
-import {
-  checkTrackExp,
-  checkTrackSell,
-  checkTrackSend,
-  trackexp,
-  tracksell,
-  tracksend,
-} from "../../api/tracking";
+import { checkTrackExp, trackexp } from "../../api/tracking";
 import SnackbarNotification from "../../component/SneakerBar";
-import DialogSell from "./component/DialogSell";
-import CalendarSend from "./component/CalendarSend";
-import DialogSend from "./component/DialogSend";
 import CalendarExp from "./component/CalendarExp";
 import DialogExp from "./component/DialogExp";
 
@@ -172,17 +160,26 @@ const Trackexp = () => {
           <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
             <input
               type="number"
+              min="0"
               value={sellCounts[productId] || ""}
-              onChange={(e) => handleChange(productId, e.target.value)}
-              onKeyDown={(e) =>
-                e.key === "Enter" && handleSetSellCount(productId)
+              onChange={(e) =>
+                handleChange(productId, Math.max(0, e.target.value))
               }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSetSellCount(productId);
+                if (e.key === "ArrowUp" || e.key === "ArrowDown")
+                  e.preventDefault(); // Prevent up/down arrows
+              }}
+              onWheel={(e) => e.target.blur()} // Prevent scroll
               style={{
                 width: "60px",
                 padding: "5px",
                 borderRadius: "4px",
                 border: "1px solid #ccc",
                 textAlign: "center",
+                appearance: "textfield", // Hides arrows in most browsers
+                MozAppearance: "textfield", // Hides arrows in Firefox
+                WebkitAppearance: "none", // Hides arrows in WebKit browsers (Chrome, Safari)
               }}
             />
             <button
@@ -245,10 +242,17 @@ const Trackexp = () => {
 
     try {
       await trackexp(updatedForm, token);
+
+      // **Update checked state with new entry**
+      setChecked((prevChecked) => [
+        ...prevChecked,
+        { productId, sellCount: sellCounts[productId] },
+      ]);
+
       setSeverity("success");
       setSnackbarMessage("Insert Tracksell Success.");
       setOpenSnackbar(true);
-      fetchDateBrachCheck();
+
       // Reset input field after submission
       setSellCounts((prev) => ({ ...prev, [productId]: "" }));
     } catch (err) {
