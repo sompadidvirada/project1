@@ -161,7 +161,6 @@ exports.trackexp = async (req, res) => {
 exports.checkTrackSell = async (req, res) => {
   try {
     const { sellDate, brachId } = req.body;
-    console.log(req.body);
 
     if (!sellDate || !brachId) {
       return res

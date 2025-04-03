@@ -10,8 +10,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
 import Calendar from "./component/Calendar";
-import SelectBrarch from "./component/SelectBrarch";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import SelectBrach from "./component/SelectBrarch";
@@ -222,7 +221,7 @@ const Tracksell = () => {
       selectFormtracksell.brachId === ""
     ) {
       setSeverity("error");
-      setSnackbarMessage("Select Date and Brach first.");
+      setSnackbarMessage("Select Date and Branch first.");
       setOpenSnackbar(true);
       return;
     }
@@ -237,10 +236,17 @@ const Tracksell = () => {
 
     try {
       await tracksell(updatedForm, token);
+
+      // **Update checked state with new entry**
+      setChecked((prevChecked) => [
+        ...prevChecked,
+        { productId, sellCount: sellCounts[productId] },
+      ]);
+
       setSeverity("success");
       setSnackbarMessage("Insert Tracksell Success.");
       setOpenSnackbar(true);
-      fetchDateBrachCheck();
+
       // Reset input field after submission
       setSellCounts((prev) => ({ ...prev, [productId]: "" }));
     } catch (err) {
@@ -253,7 +259,6 @@ const Tracksell = () => {
     if (selectDateBrachCheck.brachId && selectDateBrachCheck.sellDate) {
       try {
         const res = await checkTrackSell(selectDateBrachCheck, token);
-        console.log(res);
         setChecked(res.data);
       } catch (error) {
         console.error("Error fetching branch check:", error);
