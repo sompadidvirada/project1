@@ -92,7 +92,6 @@ exports.getTotalSell = async (req, res) => {
     prevStart.setDate(prevStart.getDate() - shiftDays - 1); // Shift startDate by the number of days between start and end
     prevEnd.setDate(prevEnd.getDate() - shiftDays - 1); // Shift endDate by the same number of days minus 1 day for the previous period
 
-
     // Use aggregate to sum the sellCount for the current period
     const totalSell = await prisma.trackingsell.aggregate({
       where: {
@@ -118,7 +117,6 @@ exports.getTotalSell = async (req, res) => {
         sellCount: true,
       },
     });
-
 
     const totalSend = await prisma.trackingsend.aggregate({
       where: {
@@ -178,10 +176,9 @@ exports.getSellLineChart = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
 
-    // Convert startDate and endDate to Date objects
     const start = new Date(startDate);
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); // Ensure the full day is included
+    end.setHours(23, 59, 59, 999);
 
     // Fetch total sales grouped by branch and sellDay
     const salesData = await prisma.trackingsell.groupBy({
@@ -225,6 +222,9 @@ exports.getSellLineChart = async (req, res) => {
       "Sunday",
     ];
 
+    // Get unique colors for each branch
+    const uniqueColors = generateUniqueColorsLine(branches.length);
+
     // Organize data by branch
     const branchSalesMap = {};
 
@@ -232,7 +232,7 @@ exports.getSellLineChart = async (req, res) => {
       if (!branchSalesMap[brachId]) {
         branchSalesMap[brachId] = {
           id: branchMap[brachId] || `Branch ${brachId}`, // Default if no branch name found
-          color: "tokens('dark').greenAccent[500]",
+          color: uniqueColors[Object.keys(branchSalesMap).length], // Assign a unique color
           data: daysOfWeek.map((day) => ({ x: day, y: 0 })), // Initialize all days with 0
         };
       }
@@ -256,25 +256,28 @@ exports.getSellLineChart = async (req, res) => {
   }
 };
 
+// Function to generate unique HSL colors
+const generateUniqueColorsLine = (count) => {
+  const colors = [];
+  const step = 360 / count; // Evenly distribute colors around the HSL wheel
+  for (let i = 0; i < count; i++) {
+    const hue = Math.floor(i * step); // Spread hues evenly
+    colors.push(`hsl(${hue}, 70%, 50%)`);
+  }
+  return colors;
+};
+
 exports.getDataPieChart = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
 
-    // Convert startDate and endDate to Date objects
     const start = new Date(startDate);
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); // Ensure the full day is included
+    end.setHours(23, 59, 59, 999);
 
     const ress = await prisma.trackingsell.findMany({
-      where: {
-        sellAt: {
-          gte: start,
-          lte: end,
-        },
-      },
-      include: {
-        product: true,
-      },
+      where: { sellAt: { gte: start, lte: end } },
+      include: { product: true },
     });
 
     // Group by product name and sum the sellCount
@@ -287,20 +290,31 @@ exports.getDataPieChart = async (req, res) => {
       return acc;
     }, {});
 
+    // Generate unique colors
+    const uniqueColors = generateUniqueColors(Object.keys(groupedData).length);
+
     // Convert the grouped data into the desired format
-    const result = Object.keys(groupedData).map((productName, index) => {
-      const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`; // Random color
-      return {
-        id: productName, // id as product name
-        label: productName, // label as product name
-        value: groupedData[productName].value, // sum of sellCount for this product
-        color: randomColor, // random color
-      };
-    });
+    const result = Object.keys(groupedData).map((productName, index) => ({
+      id: productName,
+      label: productName,
+      value: groupedData[productName].value,
+      color: uniqueColors[index],
+    }));
 
     res.send(result);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `Something went wrong.` });
   }
+};
+
+// Function to generate unique HSL colors
+const generateUniqueColors = (count) => {
+  const colors = [];
+  const step = 360 / count; // Evenly distribute colors around the HSL wheel
+  for (let i = 0; i < count; i++) {
+    const hue = Math.floor(i * step); // Spread hues evenly
+    colors.push(`hsl(${hue}, 70%, 50%)`);
+  }
+  return colors;
 };

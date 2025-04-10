@@ -12,7 +12,6 @@ const ProtectAdmin = ({ element }) => {
       // send to back
       currentAdmin(token)
         .then((res) => {
-          console.log(res)
           setOk(true)})
         .catch((err) => {
           console.log(err);

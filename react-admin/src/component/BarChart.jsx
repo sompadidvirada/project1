@@ -4,18 +4,22 @@ import { tokens } from "../theme";
 import useBakeryStore from "../zustand/storage";
 
 const BarChart = ({ isDashboard = false, data }) => {
-
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { products = [], data: dataBar } = useBakeryStore();
   const productNames = products.map((product) => product.name);
 
+  const productSecon = [" "];
 
-  const productSecon = [" "]
+  // Ensure data is an array
+  const chartData = Array.isArray(data) ? data || dataBar : [];
+
+
 
   return (
     <ResponsiveBar
-      data={Array.isArray(data) ? data || dataBar : []}
+      data={chartData} // <-- use the pre-processed data
+      maxValue={800} // <-- dynamic max
       theme={{
         // added
         axis: {
@@ -68,8 +72,7 @@ const BarChart = ({ isDashboard = false, data }) => {
       keys={productNames ? productNames : productSecon}
       indexBy="country"
       margin={{ top: 20, right: 180, bottom: 50, left: 60 }}
-      padding={0.9}
-      maxValue={500}
+      padding={0.6}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
       colors={{ scheme: "nivo" }}
