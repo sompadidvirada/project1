@@ -194,7 +194,7 @@ exports.getSellLineChart = async (req, res) => {
       },
     });
 
-    // Fetch branch names for each brachId
+    // Fetch branch names
     const branches = await prisma.brach.findMany({
       where: {
         id: { in: salesData.map((sale) => sale.brachId) },
@@ -205,49 +205,45 @@ exports.getSellLineChart = async (req, res) => {
       },
     });
 
-    // Convert branches array to a map for quick lookup
+    // Map for quick branch name lookup
     const branchMap = {};
-    branches.forEach((branch) => {
+    branches.forEach(branch => {
       branchMap[branch.id] = branch.name;
     });
 
-    // Define days of the week in correct order
     const daysOfWeek = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
+      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ];
 
-    // Get unique colors for each branch
-    const uniqueColors = generateUniqueColorsLine(branches.length);
-
-    // Organize data by branch
+    // Initialize result
     const branchSalesMap = {};
 
-    salesData.forEach(({ sellDay, brachId, _sum }) => {
-      if (!branchSalesMap[brachId]) {
-        branchSalesMap[brachId] = {
-          id: branchMap[brachId] || `Branch ${brachId}`, // Default if no branch name found
-          color: uniqueColors[Object.keys(branchSalesMap).length], // Assign a unique color
-          data: daysOfWeek.map((day) => ({ x: day, y: 0 })), // Initialize all days with 0
-        };
-      }
+    // Initialize structure for each branch
+    branches.forEach(branch => {
+      branchSalesMap[branch.id] = {
+        id: branch.name,
+        data: daysOfWeek.map(day => ({ x: day, y: 0 })),
+      };
+    });
 
-      // Find the corresponding day in the dataset and update the y value
+    // Populate sales count into correct day
+    salesData.forEach(({ sellDay, brachId, _sum }) => {
+      const branch = branchSalesMap[brachId];
+      if (!branch) return;
+
       const dayIndex = daysOfWeek.findIndex(
-        (day) => day.toLowerCase() === sellDay.toLowerCase()
+        day => day.toLowerCase() === sellDay.toLowerCase()
       );
+
       if (dayIndex !== -1) {
-        branchSalesMap[brachId].data[dayIndex].y = _sum.sellCount || 0;
+        branch.data[dayIndex].y += _sum.sellCount || 0;
       }
     });
 
-    // Convert branchSalesMap to an array
+    // Convert to array format
     const responseData = Object.values(branchSalesMap);
+
+    console.log(responseData)
 
     res.json(responseData);
   } catch (err) {
@@ -255,6 +251,7 @@ exports.getSellLineChart = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 // Function to generate unique HSL colors
 const generateUniqueColorsLine = (count) => {
