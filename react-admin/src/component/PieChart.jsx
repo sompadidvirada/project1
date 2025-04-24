@@ -94,7 +94,7 @@ const PieChart = ({ isDashboard, dataPie }) => {
             direction: "column",
             justify: false,
             translateX: -200,
-            translateY: -123,
+            translateY: 0,
             itemsSpacing: 5,
             itemWidth: 10,
             itemHeight: 19,

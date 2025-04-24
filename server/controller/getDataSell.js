@@ -243,7 +243,6 @@ exports.getSellLineChart = async (req, res) => {
     // Convert to array format
     const responseData = Object.values(branchSalesMap);
 
-    console.log(responseData)
 
     res.json(responseData);
   } catch (err) {
