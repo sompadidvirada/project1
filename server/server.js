@@ -1,8 +1,8 @@
 const express = require("express");
+const app = express();
 const morgan = require("morgan");
 const path = require("path");
 const fs = require("fs");
-const app = express();
 const { readdirSync } = require("fs");
 const cors = require("cors");
 
@@ -10,7 +10,11 @@ const defaultImage = "public/uploads/nigler.png";
 
 app.use(express.json({ limit: `100mb` }));
 app.use(morgan("dev"));
+app.use(express.static('public'))
 app.use(cors());
+
+const socketio = require('socket.io')
+
 
 // Middleware to check if the requested image exists
 app.get("/uploads/:imageName", (req, res) => {
@@ -28,4 +32,10 @@ readdirSync("./routes").map((item) =>
   app.use("/", require("./routes/" + item))
 );
 
-app.listen(5003, () => console.log("Server is Running in port 5003!"));
+
+const expressServer = app.listen(5003, () => console.log("Server is Running in port 5003!"));
+
+
+const io = socketio(expressServer, {
+  
+})
