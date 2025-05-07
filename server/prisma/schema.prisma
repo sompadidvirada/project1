@@ -57,7 +57,7 @@ model trackingsell {
   sellDay   String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id])
+  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade )
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
@@ -70,7 +70,7 @@ model trackingsend {
   sendDay   String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id])
+  product   product  @relation(fields: [productId], references: [id],onDelete: Cascade)
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
@@ -83,7 +83,7 @@ model trackingexp {
   expDay    String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id])
+  product   product  @relation(fields: [productId], references: [id],onDelete: Cascade)
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
