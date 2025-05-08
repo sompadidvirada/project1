@@ -207,22 +207,28 @@ exports.getSellLineChart = async (req, res) => {
 
     // Map for quick branch name lookup
     const branchMap = {};
-    branches.forEach(branch => {
+    branches.forEach((branch) => {
       branchMap[branch.id] = branch.name;
     });
 
     const daysOfWeek = [
-      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
     ];
 
     // Initialize result
     const branchSalesMap = {};
 
     // Initialize structure for each branch
-    branches.forEach(branch => {
+    branches.forEach((branch) => {
       branchSalesMap[branch.id] = {
         id: branch.name,
-        data: daysOfWeek.map(day => ({ x: day, y: 0 })),
+        data: daysOfWeek.map((day) => ({ x: day, y: 0 })),
       };
     });
 
@@ -232,7 +238,7 @@ exports.getSellLineChart = async (req, res) => {
       if (!branch) return;
 
       const dayIndex = daysOfWeek.findIndex(
-        day => day.toLowerCase() === sellDay.toLowerCase()
+        (day) => day.toLowerCase() === sellDay.toLowerCase()
       );
 
       if (dayIndex !== -1) {
@@ -243,14 +249,12 @@ exports.getSellLineChart = async (req, res) => {
     // Convert to array format
     const responseData = Object.values(branchSalesMap);
 
-
     res.json(responseData);
   } catch (err) {
     console.error(err);
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 // Function to generate unique HSL colors
 const generateUniqueColorsLine = (count) => {
@@ -313,4 +317,99 @@ const generateUniqueColors = (count) => {
     colors.push(`hsl(${hue}, 70%, 50%)`);
   }
   return colors;
+};
+
+exports.dataTrack = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const fecthProducts = await prisma.product.findMany();
+
+    const fecthBrach = await prisma.brach.findMany({
+      include: {
+        tracsell: {
+          where: {
+            sellAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        tracksend: {
+          where: {
+            sendAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        trackexp: {
+          where: {
+            expAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+      },
+    });
+
+    const result = fecthBrach.map((branch) => {
+      const detail = fecthProducts.map((product) => {
+        // Filter and sum tracsell
+        const totalSell = branch.tracsell
+          .filter(
+            (s) =>
+              s.productId === product.id &&
+              new Date(s.sellAt) >= start &&
+              new Date(s.sellAt) <= end
+          )
+          .reduce((sum, s) => sum + s.sellCount, 0);
+
+        // Filter and sum tracksend
+        const totalSend = branch.tracksend
+          .filter(
+            (s) =>
+              s.productId === product.id &&
+              new Date(s.sendAt) >= start &&
+              new Date(s.sendAt) <= end
+          )
+          .reduce((sum, s) => sum + s.sendCount, 0);
+
+        // Filter and sum trackexp
+        const totalExp = branch.trackexp
+          .filter(
+            (s) =>
+              s.productId === product.id &&
+              new Date(s.expAt) >= start &&
+              new Date(s.expAt) <= end
+          )
+          .reduce((sum, s) => sum + s.expCount, 0);
+
+        return {
+          id: product.id,
+          name: product.name,
+          image: product.image,
+          totalSell,
+          totalSend,
+          totalExp,
+        };
+      });
+
+      return {
+        id: branch.id,
+        name: branch.name,
+        detail,
+      };
+    });
+
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong 500.` });
+  }
 };

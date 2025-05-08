@@ -55,7 +55,11 @@ const Dashboard = () => {
   }, [token, queryForm]);
 
   return (
-    <Box m="20px">
+    <Box m="20px" sx={{
+      width: "98%",
+      height: "100%",
+      overflow: "scroll"
+    }}>
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Header title="DASHBOARD" subtitle="Welcome to your dashboard" />

@@ -14,12 +14,12 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import MapOutlinedIcon from "@mui/icons-material/MapOutlined";
 import useBakeryStore from "../../zustand/storage";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ListIcon from "@mui/icons-material/List";
 import BakeryDiningIcon from "@mui/icons-material/BakeryDining";
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import {
   TextField,
   Button,
@@ -110,7 +110,6 @@ const Sidebar = () => {
     const { name, value } = e.target;
     setEditProfile({ ...editProflie, [name]: value });
   };
-
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]; // Get the first file selected by the user
@@ -382,7 +381,20 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-           
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              DATA TABLE
+            </Typography>
+            <Item
+              title="Data Track"
+              to="/admin/datatrack"
+              icon={<DeviceHubIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Box>
         </Menu>
       </ProSidebar>

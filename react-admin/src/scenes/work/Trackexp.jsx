@@ -52,7 +52,7 @@ const Trackexp = () => {
     {
       field: "image",
       headerName: "PICTURE",
-      flex: 0.5,
+      flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
           ? `http://localhost:5003/uploads/${params.row.image}`
@@ -82,7 +82,7 @@ const Trackexp = () => {
       headerAlign: "left",
       align: "left",
       cellClassName: "name-column--cell",
-      flex: 1,
+      flex: 0.5,
       renderCell: (params) => (
         <Typography
           variant="laoText"
@@ -92,41 +92,7 @@ const Trackexp = () => {
           {params?.value}
         </Typography>
       ),
-    },
-    {
-      field: "category",
-      headerName: "CATEGORY",
-      type: "text",
-      headerAlign: "left",
-      flex: 0.5,
-      align: "left",
-      renderCell: (params) => {
-        return params.row.category ? (
-          <Typography
-            variant="laoText"
-            fontWeight="bold"
-            color={colors.grey[100]}
-          >
-            {params.row.category.name}
-          </Typography>
-        ) : (
-          "No Category"
-        );
-      },
-    },
-    {
-      field: "price",
-      type: "number",
-      headerName: "PRICE",
-      flex: 0.5,
-    },
-    {
-      field: "sellprice",
-      type: "number",
-      headerName: "SELL PRICE",
-      flex: 0.5,
-    },
-    {
+    },{
       field: "manage",
       headerName: "SALE COUNT",
       flex: 0.5,
@@ -200,6 +166,40 @@ const Trackexp = () => {
         );
       },
     },
+    {
+      field: "category",
+      headerName: "CATEGORY",
+      type: "text",
+      headerAlign: "left",
+      flex: 0.5,
+      align: "left",
+      renderCell: (params) => {
+        return params.row.category ? (
+          <Typography
+            variant="laoText"
+            fontWeight="bold"
+            color={colors.grey[100]}
+          >
+            {params.row.category.name}
+          </Typography>
+        ) : (
+          "No Category"
+        );
+      },
+    },
+    {
+      field: "price",
+      type: "number",
+      headerName: "PRICE",
+      flex: 0.5,
+    },
+    {
+      field: "sellprice",
+      type: "number",
+      headerName: "SELL PRICE",
+      flex: 0.5,
+    },
+    
   ];
 
   // Function.............................

@@ -5,10 +5,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { getDateSell } from "../../api/getDate";
 import useBakeryStore from "../../zustand/storage";
-import { getDataLineChart, getDataPieChart } from "../../api/tracking";
+import { getDataLineChart, getDataPieChart, getDataTrack } from "../../api/tracking";
 
 export default function Calendar() {
-  const { queryForm, setQueryForm, setData, setDataLine, setDataPie } = useBakeryStore();
+  const { queryForm, setQueryForm, setData, setDataLine, setDataPie, setDataTrack } = useBakeryStore();
 
   const fetchDate = async () => {
     try {
@@ -37,12 +37,25 @@ export default function Calendar() {
       console.log(err)
     }
   }
+  const fecthDataTrack = async () => {
+    try {
+      const respone = await getDataTrack(queryForm)
+      
+      setDataTrack(respone.data)
 
+    }catch(err) {
+      console.log(err)
+    }
+  }
+
+
+  
   React.useEffect(() => {
     if (queryForm.startDate && queryForm.endDate) {
       fetchDate();
       fecthDataLine()
       fecthDataPie()
+      fecthDataTrack()
     }
   }, [queryForm.startDate, queryForm.endDate]);
 

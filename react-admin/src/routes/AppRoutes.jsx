@@ -22,6 +22,7 @@ import Line from "../scenes/line/Line";
 import ProtectUser from "./ProtectUser";
 import LayoutUser from "../scenes/layout/LayoutUser";
 import Pie from "../scenes/pie/Pie";
+import DataTrack from "../scenes/data_track/DataTrack";
 
 const router = createBrowserRouter([
   {
@@ -54,7 +55,9 @@ const router = createBrowserRouter([
       { path: "bar", element: <Bar /> },
       { path: "pie", element: <Pie /> },
       { path: "line", element: <Line /> },
-      { path: "geography", element: <GeographyChart /> }
+      { path: "geography", element: <GeographyChart /> },
+      { path: "datatrack", element: <DataTrack /> }
+
     ],
   },
   {

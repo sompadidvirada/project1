@@ -117,3 +117,11 @@ export const deleteAllTrackEXP = (form, token) => {
     },
   });
 };
+
+export const getDataTrack = (date, token) => {
+  return axios.post("http://localhost:5003/datatrack", date, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -12,7 +12,8 @@ const BakeryStore = (set, get) => ({
   brach: null,
   data: null,
   dataLine: null,
-  dataPie:null,
+  dataPie: null,
+  dataTrack: null,
   queryForm: {
     startDate: "", // New state for queryForm
     endDate: "",
@@ -36,6 +37,9 @@ const BakeryStore = (set, get) => ({
   },
   setDataPie: (newData) => {
     set({ dataPie: newData }); // <-- Add function to update data
+  },
+  setDataTrack: (newData) => {
+    set({ dataTrack: newData }); // <-- Add function to update data
   },
   logout: () => {
     set({

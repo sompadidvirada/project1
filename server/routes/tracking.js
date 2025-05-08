@@ -9,13 +9,13 @@ const {
   updateTrackSell,
   updateTrackSend,
   updateTrackExp,
-  deleteTrack,
   deleteTrackSell,
   deleteTrackSend,
   deleteTrackEXP,
 } = require("../controller/tracking");
 const router = express.Router();
 const { authCheck, adminCheck } = require("../middleware/authCheck");
+const { dataTrack } = require("../controller/getDataSell");
 
 router.post("/tracksell", authCheck, tracksell);
 router.post("/tracksend", authCheck, tracksend);

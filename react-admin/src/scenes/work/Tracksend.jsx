@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import SelectBrach from "./component/SelectBrarch";
@@ -47,11 +47,11 @@ const Tracksend = () => {
 
   const [checked, setChecked] = useState(null);
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.2 },
+    { field: "id", headerName: "ID", flex: 0.1 },
     {
       field: "image",
       headerName: "PICTURE",
-      flex: 0.5,
+      flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
           ? `http://localhost:5003/uploads/${params.row.image}`
@@ -81,7 +81,7 @@ const Tracksend = () => {
       headerAlign: "left",
       align: "left",
       cellClassName: "name-column--cell",
-      flex: 1,
+      flex: 0.4,
       renderCell: (params) => (
         <Typography
           variant="laoText"
@@ -91,44 +91,10 @@ const Tracksend = () => {
           {params?.value}
         </Typography>
       ),
-    },
-    {
-      field: "category",
-      headerName: "CATEGORY",
-      type: "text",
-      headerAlign: "left",
-      flex: 0.5,
-      align: "left",
-      renderCell: (params) => {
-        return params.row.category ? (
-          <Typography
-            variant="laoText"
-            fontWeight="bold"
-            color={colors.grey[100]}
-          >
-            {params.row.category.name}
-          </Typography>
-        ) : (
-          "No Category"
-        );
-      },
-    },
-    {
-      field: "price",
-      type: "number",
-      headerName: "PRICE",
-      flex: 0.5,
-    },
-    {
-      field: "sellprice",
-      type: "number",
-      headerName: "SELL PRICE",
-      flex: 0.5,
-    },
-    {
+    },{
       field: "manage",
       headerName: "SALE COUNT",
-      flex: 0.5,
+      flex: 0.3,
       renderCell: (params) => {
         const productId = params.row.id;
 
@@ -199,6 +165,40 @@ const Tracksend = () => {
         );
       },
     },
+    {
+      field: "category",
+      headerName: "CATEGORY",
+      type: "text",
+      headerAlign: "left",
+      flex: 0.5,
+      align: "left",
+      renderCell: (params) => {
+        return params.row.category ? (
+          <Typography
+            variant="laoText"
+            fontWeight="bold"
+            color={colors.grey[100]}
+          >
+            {params.row.category.name}
+          </Typography>
+        ) : (
+          "No Category"
+        );
+      },
+    },
+    {
+      field: "price",
+      type: "number",
+      headerName: "PRICE",
+      flex: 0.5,
+    },
+    {
+      field: "sellprice",
+      type: "number",
+      headerName: "SELL PRICE",
+      flex: 0.5,
+    },
+    
   ];
 
   // Function.............................
