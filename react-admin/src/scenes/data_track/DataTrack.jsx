@@ -139,7 +139,6 @@ const DataTrack = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
             height: "100%",
             textDecoration: "none",
             alignContent: "center",
@@ -165,7 +164,6 @@ const DataTrack = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
             height: "100%",
             textDecoration: "none",
           }}
