@@ -11,5 +11,4 @@ router.post('/getdatapiechart', getDataPieChart)
 router.post('/datatrack', dataTrack)
 
 
-
 module.exports = router;

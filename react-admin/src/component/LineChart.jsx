@@ -89,6 +89,7 @@ const CustomTooltip = ({ active, payload, label }) => {
           padding: "10px",
           borderRadius: "8px",
           boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+          fontFamily: theme.typography.fontFamily,
         }}
       >
         <p style={{ margin: 0, fontWeight: "bold", color: colors.grey[100] }}>

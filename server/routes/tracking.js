@@ -14,8 +14,7 @@ const {
   deleteTrackEXP,
 } = require("../controller/tracking");
 const router = express.Router();
-const { authCheck, adminCheck } = require("../middleware/authCheck");
-const { dataTrack } = require("../controller/getDataSell");
+const { authCheck } = require("../middleware/authCheck");
 
 router.post("/tracksell", authCheck, tracksell);
 router.post("/tracksend", authCheck, tracksend);

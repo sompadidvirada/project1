@@ -275,11 +275,15 @@ const Dashboard = () => {
           gridRow="span 4"
           backgroundColor={colors.primary[400]}
           textAlign="center"
+          gap="50px"
+          paddingBottom="100px"
+          paddingTop="50px"
         >
-          <Typography variant="laoText" fontWeight="600">
+          <Typography variant="laoText" fontWeight="600" sx={{
+          }}>
             ຍອດຂອງແຕ່ລະລາຍການທຸກສາຂາ
           </Typography>
-          <Box height="100%" mt="-20px">
+          <Box height="100%">
             {dataPie && dataPie?.length > 0 ? (
               <PieChart isDashboard={true} dataPie={dataPie} />
             ) : (
