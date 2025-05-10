@@ -11,8 +11,12 @@ const defaultImage = "public/uploads/nigler.png";
 app.use(express.json({ limit: `100mb` }));
 app.use(morgan("dev"));
 app.use(express.static('public'))
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "*", // Allow all IPs
+    credentials: true, // if using cookies
+  })
+);
 const socketio = require('socket.io')
 
 
@@ -33,7 +37,9 @@ readdirSync("./routes").map((item) =>
 );
 
 
-const expressServer = app.listen(5003, () => console.log("Server is Running in port 5003!"));
+const expressServer = app.listen(5003, '0.0.0.0', () => {
+  console.log("API running on port 5003");
+});
 
 
 const io = socketio(expressServer, {

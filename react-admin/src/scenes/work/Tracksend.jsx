@@ -14,7 +14,11 @@ import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
 import SelectBrach from "./component/SelectBrarch";
-import { checkTrackSend, deleteAllTrackSend, tracksend } from "../../api/tracking";
+import {
+  checkTrackSend,
+  deleteAllTrackSend,
+  tracksend,
+} from "../../api/tracking";
 import SnackbarNotification from "../../component/SneakerBar";
 import CalendarSend from "./component/CalendarSend";
 import DialogSend from "./component/DialogSend";
@@ -54,7 +58,7 @@ const Tracksend = () => {
       flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
-          ? `http://localhost:5003/uploads/${params.row.image}`
+          ? `http://192.168.1.8:5003/uploads/${params.row.image}`
           : null;
         return imageUrl ? (
           <img
@@ -91,7 +95,8 @@ const Tracksend = () => {
           {params?.value}
         </Typography>
       ),
-    },{
+    },
+    {
       field: "manage",
       headerName: "SALE COUNT",
       flex: 0.3,
@@ -198,7 +203,6 @@ const Tracksend = () => {
       headerName: "SELL PRICE",
       flex: 0.5,
     },
-    
   ];
 
   // Function.............................
@@ -273,31 +277,34 @@ const Tracksend = () => {
     fetchDateBrachCheck();
   }, [selectDateBrachCheck.brachId, selectDateBrachCheck.sendDate, token]);
 
-    const handeDeleteAll = async () => {
-      try {
-        await deleteAllTrackSend(selectDateBrachCheck, token);
-        setSeverity("success");
-        setSnackbarMessage("Delete All Track Success.");
-        setOpenSnackbar(true);
-        fetchDateBrachCheck();
-      } catch (err) {
-        console.log(err);
-        setSeverity("error");
-        setSnackbarMessage("can'it delete.");
-        setOpenSnackbar(true);
-      }
-    };
+  const handeDeleteAll = async () => {
+    try {
+      await deleteAllTrackSend(selectDateBrachCheck, token);
+      setSeverity("success");
+      setSnackbarMessage("Delete All Track Success.");
+      setOpenSnackbar(true);
+      fetchDateBrachCheck();
+    } catch (err) {
+      console.log(err);
+      setSeverity("error");
+      setSnackbarMessage("can'it delete.");
+      setOpenSnackbar(true);
+    }
+  };
 
   //Return zone...........................
 
   return (
-    <Box m="20px" textAlign="center">
+    <Box
+      m="20px"
+      sx={{ height: "100vh", display: "flex", flexDirection: "column" }}
+    >
       <Header title="INSERT TRACK SEND" />
       <Box
         mt="30px"
         display="grid"
         gridTemplateColumns="repeat(1, 10fr)"
-        gridAutoRows="60px"
+        gridAutoRows={{ xs: "auto", sm: "60px" }}
         gap="20px"
       >
         {/** Section 1  select calendar and select branches. */}
@@ -318,6 +325,7 @@ const Tracksend = () => {
             justifyContent="center"
             alignItems="center"
             gap="20px"
+            flexWrap="wrap"
           >
             <Box>
               <CalendarSend
@@ -335,9 +343,7 @@ const Tracksend = () => {
             </Box>
             <Box>
               <Button variant="contained" onClick={handeDeleteAll}>
-                <Typography variant="laoText">
-                  Clear for today
-                </Typography>
+                <Typography variant="laoText">Clear for today</Typography>
               </Button>
             </Box>
           </Box>
@@ -351,15 +357,18 @@ const Tracksend = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
-            height: "100%",
+            maxWidth: "100vw", // ensures it fits within screen width
+            height: "auto", // let it grow with content
             textDecoration: "none",
+            overflowX: "auto", // allow horizontal scroll on small screens
           }}
         >
           <Box
-            m="40px 0 0 0"
-            height="70vh"
+            flexGrow={1}
+            minHeight="0"
             sx={{
+              overflow: "auto", // Enable scrolling inside the box
+              maxHeight: "calc(100vh - 250px)", // Adjust 250px to your header and margin height
               "& .MuiDataGrid-root": {
                 border: "none",
               },
@@ -389,7 +398,12 @@ const Tracksend = () => {
             }}
           >
             {selectFormtracksell.sendAt && selectFormtracksell.brachId ? (
-              <DataGrid rows={products} columns={columns} />
+              <DataGrid
+                rows={products}
+                columns={columns}
+                autoHeight // let it grow to fit content
+                sx={{ width: "100%" }}
+              />
             ) : (
               <Typography
                 variant="laoText"

@@ -7,6 +7,7 @@ import { createUser } from "../../api/form";
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { useRef } from "react";
+import useBakeryStore from "../../zustand/storage";
 
 const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
@@ -15,10 +16,10 @@ const Form = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar state
   const [openSnackbarerror, setOpenSnackbarerror] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const token = useBakeryStore((state)=>state.token)
 
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
-      console.log(values);
       const formData = new FormData();
 
       // Append all other form fields
@@ -32,7 +33,7 @@ const Form = () => {
         }
       });
 
-      const res = await createUser(formData);
+      const res = await createUser(formData,token);
       setSnackbarMessage(res.data.message || "Create successful!")
       console.log(res);
 

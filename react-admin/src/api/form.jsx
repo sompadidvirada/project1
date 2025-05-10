@@ -1,11 +1,18 @@
 import axios from "axios";
 
-export const createUser = (form) => {
-  return axios.post("http://localhost:5003/createuser", form);
+
+const BASE_URL = "http://192.168.1.8:5003";
+
+export const createUser = (form, token) => {
+  return axios.post(`${BASE_URL}/createuser`, form, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
 };
 
 export const getAllUser = (token) => {
-  return axios.get("http://localhost:5003/getalluser", {
+  return axios.get(`${BASE_URL}/getalluser`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -14,7 +21,7 @@ export const getAllUser = (token) => {
 
 export const updateUserRole = (userId, newRole, token) => {
   return axios.put(
-    "http://localhost:5003/updaterole" + userId,
+    `${BASE_URL}/updaterole` + userId,
     { newRole },
     {
       headers: {
@@ -26,7 +33,7 @@ export const updateUserRole = (userId, newRole, token) => {
 
 export const updateUserStatus = (userId, newStatus, token) => {
   return axios.put(
-    "http://localhost:5003/updatestatus" + userId,
+    `${BASE_URL}/updatestatus` + userId,
     { newStatus },
     {
       headers: {

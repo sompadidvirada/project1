@@ -1,6 +1,5 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import Header from "../../component/Header";
 import LineChart from "../../component/LineChart";
 import BarChart from "../../component/BarChart";
@@ -221,13 +220,17 @@ const Dashboard = () => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Box>
+            <Box
+            >
               <Typography
-                variant="h5"
+                variant="laoText"
                 fontWeight="600"
                 color={colors.grey[100]}
+                sx={{
+                  paddingBottom:"10px"
+                }}
               >
-                Revenue Generated
+                ຍອດຂາຍເປັນວັນ ຈັນ-ອາທິດ ຂອງທຸກສາຂາ
               </Typography>
             </Box>
           </Box>

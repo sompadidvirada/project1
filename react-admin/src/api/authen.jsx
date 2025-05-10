@@ -1,8 +1,11 @@
 import axios from "axios";
 
+
+const BASE_URL = "http://192.168.1.8:5003";
+
 export const currentUser = async (token) =>
   await axios.post(
-    "http://localhost:5003/current-user",
+    `${BASE_URL}/current-user`,
     {},
     {
       headers: {
@@ -13,7 +16,7 @@ export const currentUser = async (token) =>
 
 export const currentAdmin = async (token) => {
   return await axios.post(
-    "http://localhost:5003/current-admin",
+    `${BASE_URL}/current-admin`,
     {},
     {
       headers: {
@@ -24,9 +27,9 @@ export const currentAdmin = async (token) => {
 };
 
 export const updateBasicUser = async (id, form, token) => {
-  return axios.put("http://localhost:5003/updatefromuser/" + id, form, {
+  return axios.put(`${BASE_URL}/updatefromuser/${id}`, form, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
-  })
-}
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

@@ -9,10 +9,11 @@ import { getDataLineChart, getDataPieChart, getDataTrack } from "../../api/track
 
 export default function Calendar() {
   const { queryForm, setQueryForm, setData, setDataLine, setDataPie, setDataTrack } = useBakeryStore();
+  const token = useBakeryStore((state)=>state.token)
 
   const fetchDate = async () => {
     try {
-      const getDate = await getDateSell(queryForm);
+      const getDate = await getDateSell(queryForm, token);
       setData(getDate.data); // <-- Save data in Zustand
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -21,7 +22,7 @@ export default function Calendar() {
   
   const fecthDataLine = async () => {
     try {
-      const getDataLine = await getDataLineChart(queryForm)
+      const getDataLine = await getDataLineChart(queryForm, token)
       setDataLine(getDataLine.data)
     }catch(err){
       console.log(err)
@@ -30,7 +31,7 @@ export default function Calendar() {
 
   const fecthDataPie = async () => {
     try {
-      const getDataPie = await getDataPieChart(queryForm)
+      const getDataPie = await getDataPieChart(queryForm, token)
       setDataPie(getDataPie.data)
 
     }catch(err) {
@@ -39,7 +40,7 @@ export default function Calendar() {
   }
   const fecthDataTrack = async () => {
     try {
-      const respone = await getDataTrack(queryForm)
+      const respone = await getDataTrack(queryForm, token)
       
       setDataTrack(respone.data)
 

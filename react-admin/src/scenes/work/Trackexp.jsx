@@ -55,7 +55,7 @@ const Trackexp = () => {
       flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
-          ? `http://localhost:5003/uploads/${params.row.image}`
+          ? `http://192.168.1.8:5003/uploads/${params.row.image}`
           : null;
         return imageUrl ? (
           <img
@@ -92,7 +92,8 @@ const Trackexp = () => {
           {params?.value}
         </Typography>
       ),
-    },{
+    },
+    {
       field: "manage",
       headerName: "SALE COUNT",
       flex: 0.5,
@@ -199,7 +200,6 @@ const Trackexp = () => {
       headerName: "SELL PRICE",
       flex: 0.5,
     },
-    
   ];
 
   // Function.............................
@@ -277,21 +277,20 @@ const Trackexp = () => {
     fetchDateBrachCheck();
   }, [selectDateBrachCheck.brachId, selectDateBrachCheck.expDate, token]);
 
-
-    const handeDeleteAll = async () => {
-      try {
-        await deleteAllTrackEXP(selectDateBrachCheck, token);
-        setSeverity("success");
-        setSnackbarMessage("Delete All Track Success.");
-        setOpenSnackbar(true);
-        fetchDateBrachCheck();
-      } catch (err) {
-        console.log(err);
-        setSeverity("error");
-        setSnackbarMessage("can'it delete.");
-        setOpenSnackbar(true);
-      }
-    };
+  const handeDeleteAll = async () => {
+    try {
+      await deleteAllTrackEXP(selectDateBrachCheck, token);
+      setSeverity("success");
+      setSnackbarMessage("Delete All Track Success.");
+      setOpenSnackbar(true);
+      fetchDateBrachCheck();
+    } catch (err) {
+      console.log(err);
+      setSeverity("error");
+      setSnackbarMessage("can'it delete.");
+      setOpenSnackbar(true);
+    }
+  };
 
   //Return zone...........................
 
@@ -308,16 +307,16 @@ const Trackexp = () => {
         {/** Section 1  select calendar and select branches. */}
 
         <Box
-          gridColumn="span 1"
-          backgroundColor={colors.primary[400]}
-          sx={{
-            width: "100%",
-            maxWidth: "1600px",
-            height: "100%",
-            textDecoration: "none",
-            alignContent: "center",
-          }}
-        >
+                  gridColumn="span 1"
+                  backgroundColor={colors.primary[400]}
+                  sx={{
+                    width: "100%",
+                    maxWidth: "100vw", // or something like 95vw
+                    height: "100%",
+                    textDecoration: "none",
+                    alignContent: "center",
+                  }}
+                >
           <Box
             display="flex"
             justifyContent="center"
@@ -340,9 +339,7 @@ const Trackexp = () => {
             </Box>
             <Box>
               <Button variant="contained" onClick={handeDeleteAll}>
-                <Typography variant="laoText">
-                  Clear for today
-                </Typography>
+                <Typography variant="laoText">Clear for today</Typography>
               </Button>
             </Box>
           </Box>
@@ -356,15 +353,18 @@ const Trackexp = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
-            height: "100%",
+            maxWidth: "100vw", // ensures it fits within screen width
+            height: "auto", // let it grow with content
             textDecoration: "none",
+            overflowX: "auto", // allow horizontal scroll on small screens
           }}
         >
           <Box
-            m="40px 0 0 0"
-            height="70vh"
+            flexGrow={1}
+            minHeight="0"
             sx={{
+              overflow: "auto", // Enable scrolling inside the box
+              maxHeight: "calc(100vh - 250px)", // Adjust 250px to your header and margin height
               "& .MuiDataGrid-root": {
                 border: "none",
               },
@@ -394,7 +394,12 @@ const Trackexp = () => {
             }}
           >
             {selectFormtracksell.expAt && selectFormtracksell.brachId ? (
-              <DataGrid rows={products} columns={columns} />
+              <DataGrid
+                rows={products}
+                columns={columns}
+                autoHeight // let it grow to fit content
+                sx={{ width: "100%" }}
+              />
             ) : (
               <Typography
                 variant="laoText"

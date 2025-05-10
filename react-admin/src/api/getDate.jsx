@@ -1,5 +1,12 @@
 import axios from 'axios'
 
-export const getDateSell = (form) => {
-    return axios.post('http://localhost:5003/getDatesell', form)
+
+const BASE_URL = "http://192.168.1.8:5003";
+
+export const getDateSell = (form, token) => {
+    return axios.post(`${BASE_URL}/getDatesell`, form, {
+        headers:{
+            Authorization: `Bearer ${token}`
+        }
+    })
 }

@@ -1,7 +1,11 @@
 import axios from "axios";
 
+
+
+const BASE_URL = "http://192.168.1.8:5003";
+
 export const createProduct = (form, token) => {
-  return axios.post("http://localhost:5003/createproduct", form , {
+  return axios.post(`${BASE_URL}/createproduct`, form , {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -9,7 +13,7 @@ export const createProduct = (form, token) => {
 };
 
 export const updateProduct = (id, form, token) => {
-  return axios.put("http://localhost:5003/updateproduct/" + id, form, {
+  return axios.put(`${BASE_URL}/updateproduct/` + id, form, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -17,7 +21,7 @@ export const updateProduct = (id, form, token) => {
 };
 
 export const getProduct = (token) => {
-  return axios.get("http://localhost:5003/getproducts", {
+  return axios.get(`${BASE_URL}/getproducts`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -25,7 +29,7 @@ export const getProduct = (token) => {
 };
 
 export const deleteProduct = (id, token) => {
-  return axios.delete("http://localhost:5003/deleteproduct/" + id, {
+  return axios.delete(`${BASE_URL}/deleteproduct/` + id, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

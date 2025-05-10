@@ -6,112 +6,155 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, Suspense, lazy } from "react";
+import { CircularProgress } from "@mui/material";
 import Header from "../../component/Header";
 import Calendar from "../bar/Calendar";
 import { tokens } from "../../theme";
-import SnackbarNotification from "../../component/SneakerBar";
-import { DataGrid } from "@mui/x-data-grid";
 import useBakeryStore from "../../zustand/storage";
 import CloseIcon from "@mui/icons-material/Close";
+
+// Lazy-load the BranchDataGrid component
+const LazyBranchDataGrid = lazy(() => import("./component/BranchDataGrid"));
 
 const DataTrack = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [severity, setSeverity] = useState("success"); // "success" or "error"
-  const products = useBakeryStore((state) => state.products);
   const dataTrack = useBakeryStore((state) => state.dataTrack);
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
 
-  const columns = [
-    { field: "id", headerName: "ID", flex: 0.2 },
-    {
-      field: "image",
-      headerName: "PICTURE",
-      flex: 0.2,
-      renderCell: (params) => {
-        const imageUrl = params.row.image
-          ? `http://localhost:5003/uploads/${params.row.image}`
-          : null;
-        return imageUrl ? (
-          <img
-            src={imageUrl}
-            alt="Product"
-            style={{
-              width: 50,
-              height: 50,
-              objectFit: "cover",
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-            onClick={() => handleImageClick(imageUrl)}
-          />
-        ) : (
-          <span>No Image</span>
-        );
+  // Preload unique images once
+  useEffect(() => {
+    if (!dataTrack || dataTrack.length === 0) return;  // Prevent processing if dataTrack is empty or undefined
+  
+    const imageUrls = dataTrack
+      .flatMap((branch) => branch.detail || []) // Fallback to empty array if `detail` is undefined
+      .map((item) =>
+        item.image ? `http://192.168.1.8:5003/uploads/${item.image}` : null
+      )
+      .filter(Boolean);
+  
+    const uniqueUrls = [...new Set(imageUrls)];
+  
+    uniqueUrls.forEach((url) => {
+      const img = new Image();
+      img.src = url;
+    });
+  }, [dataTrack]);
+
+  // Preprocess data using useMemo
+  const processedData = useMemo(() => {
+    return dataTrack.map((branch) => {
+      const rowsWithPercent = branch.detail.map((item) => ({
+        ...item,
+        percent:
+          item.totalSend > 0
+            ? parseFloat(((item.totalExp / item.totalSend) * 100).toFixed(2))
+            : 0,
+      }));
+
+      const totalExp = branch.detail.reduce(
+        (sum, item) => sum + item.totalPriceExp,
+        0
+      );
+      const totalSend = branch.detail.reduce(
+        (sum, item) => sum + item.totalPriceSend,
+        0
+      );
+      const branchPercent =
+        totalSend > 0 ? ((totalExp / totalSend) * 100).toFixed(2) : "0.00";
+
+      return {
+        ...branch,
+        rowsWithPercent,
+        totalExp,
+        branchPercent,
+      };
+    });
+  }, [dataTrack]);
+
+  const columns = useMemo(
+    () => [
+      { field: "id", headerName: "ID", flex: 0.2 },
+      {
+        field: "image",
+        headerName: "PICTURE",
+        flex: 0.2,
+        renderCell: (params) => {
+          const imageUrl = params.row.image
+            ? `http://192.168.1.8:5003/uploads/${params.row.image}`
+            : null;
+          return imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Product"
+              loading="lazy"
+              style={{
+                width: 50,
+                height: 50,
+                objectFit: "cover",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => handleImageClick(imageUrl)}
+            />
+          ) : (
+            <span>No Image</span>
+          );
+        },
       },
-    },
-    {
-      field: "name",
-      headerName: "NAME",
-      type: "text",
-      headerAlign: "left",
-      align: "left",
-      cellClassName: "name-column--cell",
-      flex: 0.5,
-      renderCell: (params) => (
-        <Typography
-          variant="laoText"
-          fontWeight="bold"
-          color={colors.grey[100]}
-        >
-          {params?.value}
-        </Typography>
-      ),
-    },
-    {
-      field: "totalSend",
-      type: "number",
-      headerName: "SEND",
-      flex: 0.5,
-    },
-    {
-      field: "totalSell",
-      type: "number",
-      headerName: "SELL",
-      flex: 0.5,
-    },
-    {
-      field: "totalExp",
-      type: "number",
-      headerName: "EXP",
-      flex: 0.5,
-    },
-    {
-      field: "percent",
-      type: "number",
-      headerName: "%",
-      flex: 0.5,
-      renderCell: (params) => {
-        const value = params.value;
-        let color = colors.greenAccent[400];
-        if (value > 30) {
-          color = "#f44336"; // red
-        } else if (value > 15) {
-          color = "#ffeb3b"; // yellow
-        }
-    
-        return (
-          <Typography fontWeight="bold" color={color}>
-            {value} %
+      {
+        field: "name",
+        headerName: "NAME",
+        flex: 0.5,
+        renderCell: (params) => (
+          <Typography
+            variant="laoText"
+            fontWeight="bold"
+            color={colors.grey[100]}
+          >
+            {params?.value}
           </Typography>
-        );
+        ),
       },
-    },
-  ];
+      { field: "totalSend", headerName: "SEND", type: "number", flex: 0.5 },
+      { field: "totalSell", headerName: "SELL", type: "number", flex: 0.5 },
+      { field: "totalExp", headerName: "EXP", type: "number", flex: 0.5 },
+      { field: "price", headerName: "PRICE", type: "number", flex: 0.5 },
+      {
+        field: "sellPrice",
+        headerName: "SELL PRICE",
+        type: "number",
+        flex: 0.5,
+      },
+      {
+        field: "totalPriceExp",
+        headerName: "TOTAL PRICE EXP",
+        type: "number",
+        flex: 0.5,
+      },
+      {
+        field: "percent",
+        headerName: "%",
+        type: "number",
+        flex: 0.5,
+        renderCell: (params) => {
+          const value = params.value;
+          let color = colors.greenAccent[400];
+          if (value > 30) color = "#f44336";
+          else if (value > 15) color = "#ffeb3b";
+
+          return (
+            <Typography fontWeight="bold" color={color}>
+              {value} %
+            </Typography>
+          );
+        },
+      },
+    ],
+    [colors]
+  );
 
   const handleImageClick = (imageUrl) => {
     setSelectedImageUrl(imageUrl);
@@ -122,9 +165,10 @@ const DataTrack = () => {
     setOpenImageModal(false);
     setSelectedImageUrl(null);
   };
+
   return (
     <Box m="20px" textAlign="center">
-      <Header title="TRACKING EVERY BRACH SALE AND EXPIRE" />
+      <Header title="TRACKING EVERY BRANCH SALE AND EXPIRE" />
       <Box
         mt="30px"
         display="grid"
@@ -132,41 +176,21 @@ const DataTrack = () => {
         gridAutoRows="60px"
         gap="20px"
       >
-        {/** Section 1  select calendar and select branches. */}
-
-        <Box
-          gridColumn="span 1"
-          backgroundColor={colors.primary[400]}
-          sx={{
-            width: "100%",
-            height: "100%",
-            textDecoration: "none",
-            alignContent: "center",
-          }}
-        >
+        <Box gridColumn="span 1" backgroundColor={colors.primary[400]}>
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
             gap="20px"
           >
-            <Box>
-              <Calendar />
-            </Box>
+            <Calendar />
           </Box>
         </Box>
-
-        {/**Section 2 insert data */}
 
         <Box
           gridColumn="span 1"
           gridRow="span 9"
           backgroundColor={colors.primary[400]}
-          sx={{
-            width: "100%",
-            height: "100%",
-            textDecoration: "none",
-          }}
         >
           <Box
             m="40px 0 0 0"
@@ -174,15 +198,9 @@ const DataTrack = () => {
             height="100%"
             overflow="scroll"
             sx={{
-              "& .MuiDataGrid-root": {
-                border: "none",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none",
-              },
-              "& .name-column--cell": {
-                color: colors.greenAccent[300],
-              },
+              "& .MuiDataGrid-root": { border: "none" },
+              "& .MuiDataGrid-cell": { borderBottom: "none" },
+              "& .name-column--cell": { color: colors.greenAccent[300] },
               "& .MuiDataGrid-columnHeaders": {
                 backgroundColor: colors.blueAccent[700],
                 borderBottom: "none",
@@ -202,36 +220,27 @@ const DataTrack = () => {
               },
             }}
           >
-            {dataTrack.map((brach, index) => {
-              const rowsWithPercent = brach.detail.map((item) => ({
-                ...item,
-                percent:
-                  item.totalSend > 0
-                    ? parseFloat(
-                        ((item.totalExp / item.totalSend) * 100).toFixed(2)
-                      )
-                    : 0,
-              }));
-
-              return (
-                <Box key={brach.id} sx={{
-                  mb:"30px"
-                }}>
-                  <Header
-                    title={
-                      <Typography variant="laoText" sx={{ fontSize: 30 }}>
-                        {brach.name}
-                      </Typography>
-                    }
-                  />
-                  <DataGrid rows={rowsWithPercent} columns={columns} />
+            <Suspense
+              fallback={
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  py={5}
+                >
+                  <CircularProgress />
                 </Box>
-              );
-            })}
+              }
+            >
+              {processedData.map((branch) => (
+                <LazyBranchDataGrid key={branch.id} branch={branch} columns={columns} />
+              ))}
+            </Suspense>
           </Box>
         </Box>
       </Box>
-      {/** image modal */}
+
+      {/* Image Modal */}
       <Dialog
         open={openImageModal}
         onClose={handleCloseImageModal}
@@ -264,13 +273,6 @@ const DataTrack = () => {
           )}
         </DialogContent>
       </Dialog>
-      {/* Snackbar for success message */}
-      <SnackbarNotification
-        open={openSnackbar}
-        message={snackbarMessage}
-        severity={severity}
-        onClose={() => setOpenSnackbar(false)}
-      />
     </Box>
   );
 };

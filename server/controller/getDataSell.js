@@ -393,10 +393,14 @@ exports.dataTrack = async (req, res) => {
         return {
           id: product.id,
           name: product.name,
+          price: product.price,
+          sellPrice: product.sellprice,
           image: product.image,
           totalSell,
           totalSend,
           totalExp,
+          totalPriceExp: product.price * totalExp,
+          totalPriceSend: product.price * totalSend,
         };
       });
 

@@ -35,7 +35,7 @@ const Tracksell = () => {
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [severity, setSeverity] = useState("success"); 
+  const [severity, setSeverity] = useState("success");
   const [selectFormtracksell, setSelectFormtracksell] = useState({
     sellCount: "",
     sellAt: "",
@@ -55,7 +55,6 @@ const Tracksell = () => {
 
   const [checked, setChecked] = useState(null);
 
-  
   const columns = [
     { field: "id", headerName: "ID", flex: 0.2 },
     {
@@ -64,7 +63,7 @@ const Tracksell = () => {
       flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
-          ? `http://localhost:5003/uploads/${params.row.image}`
+          ? `http://192.168.1.8:5003/uploads/${params.row.image}`
           : null;
         return imageUrl ? (
           <img
@@ -101,7 +100,8 @@ const Tracksell = () => {
           {params?.value}
         </Typography>
       ),
-    },{
+    },
+    {
       field: "manage",
       headerName: "SALE COUNT",
       flex: 0.3,
@@ -208,7 +208,6 @@ const Tracksell = () => {
       headerName: "SELL PRICE",
       flex: 0.5,
     },
-    
   ];
 
   // Function.............................
@@ -304,13 +303,16 @@ const Tracksell = () => {
   };
 
   return (
-    <Box m="20px" textAlign="center">
+    <Box
+      m="20px"
+      sx={{ height: "100vh", display: "flex", flexDirection: "column" }}
+    >
       <Header title="INSERT TRACK SALE" />
       <Box
         mt="30px"
         display="grid"
         gridTemplateColumns="repeat(1, 10fr)"
-        gridAutoRows="60px"
+        gridAutoRows={{ xs: "auto", sm: "60px" }}
         gap="20px"
       >
         {/** Section 1  select calendar and select branches. */}
@@ -320,7 +322,7 @@ const Tracksell = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
+            maxWidth: "100vw", // or something like 95vw
             height: "100%",
             textDecoration: "none",
             alignContent: "center",
@@ -331,6 +333,7 @@ const Tracksell = () => {
             justifyContent="center"
             alignItems="center"
             gap="20px"
+            flexWrap="wrap"
           >
             <Box>
               <Calendar
@@ -348,9 +351,7 @@ const Tracksell = () => {
             </Box>
             <Box>
               <Button variant="contained" onClick={handeDeleteAll}>
-                <Typography variant="laoText">
-                  Clear for today
-                </Typography>
+                <Typography variant="laoText">Clear for today</Typography>
               </Button>
             </Box>
           </Box>
@@ -364,15 +365,18 @@ const Tracksell = () => {
           backgroundColor={colors.primary[400]}
           sx={{
             width: "100%",
-            maxWidth: "1600px",
-            height: "100%",
+            maxWidth: "100vw", // ensures it fits within screen width
+            height: "auto", // let it grow with content
             textDecoration: "none",
+            overflowX: "auto", // allow horizontal scroll on small screens
           }}
         >
           <Box
-            m="40px 0 0 0"
-            height="70vh"
+            flexGrow={1}
+            minHeight="0"
             sx={{
+              overflow: "auto", // Enable scrolling inside the box
+              maxHeight: "calc(100vh - 250px)", // Adjust 250px to your header and margin height
               "& .MuiDataGrid-root": {
                 border: "none",
               },
@@ -402,7 +406,12 @@ const Tracksell = () => {
             }}
           >
             {selectFormtracksell.sellAt && selectFormtracksell.brachId ? (
-              <DataGrid rows={products} columns={columns} />
+              <DataGrid
+                rows={products}
+                columns={columns}
+                autoHeight // let it grow to fit content
+                sx={{ width: "100%" }}
+              />
             ) : (
               <Typography
                 variant="laoText"
@@ -440,9 +449,9 @@ const Tracksell = () => {
               alt="Large Preview"
               style={{
                 width: "100%",
-                height: "800px",
+                height: "auto",
                 maxHeight: "90vh",
-                overflow: "hidden",
+                objectFit: "contain",
               }}
             />
           )}

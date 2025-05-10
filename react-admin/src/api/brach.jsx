@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const BASE_URL = "http://192.168.1.8:5003";
+
 export const createBrach = (form, token) => {
-  return axios.post("http://localhost:5003/createbrach", form , {
+  return axios.post(`${BASE_URL}/createbrach`, form , {
     headers: {
         Authorization: `Bearer ${token}`
     }
@@ -9,7 +11,7 @@ export const createBrach = (form, token) => {
 };
 
 export const updateBrach = (form, id, token) => {
-    return axios.put('http://localhost:5003/updatebrach/' + id, {brachName: form}, {
+    return axios.put(`${BASE_URL}/updatebrach/` + id, {brachName: form}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -17,7 +19,7 @@ export const updateBrach = (form, id, token) => {
 }
 
 export const deleteBrach = (id, token) => {
-    return axios.delete('http://localhost:5003/deletebrach/' + id, {
+    return axios.delete(`${BASE_URL}/deletebrach/` + id, {
         headers: {
             Authorization: `Bearer ${token}`
         }
