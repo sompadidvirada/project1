@@ -47,7 +47,7 @@ exports.createUser = async (req, res) => {
       user: newUser,
     });
   } catch (error) {
-    console.error("Error creating user:", error);
+    console.log("Error creating user:", error);
     return res.status(500).json({ message: "Something went wrong." });
   }
 };
@@ -66,6 +66,7 @@ exports.getAllUser = async (req, res) => {
     });
     res.send(users);
   } catch (err) {
+    console.log(err)
     return res.status(400).json(`Something went wrong.`);
   }
 };
@@ -84,6 +85,7 @@ exports.updateRole = async (req, res) => {
     });
     res.send(`Update User Sueccess.`);
   } catch (err) {
+    console.log(err)
     return res.status(400).json({ message: `Something went wrong.` });
   }
 };

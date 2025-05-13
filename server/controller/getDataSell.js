@@ -70,8 +70,6 @@ exports.getTotalSell = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
 
-    console.log(startDate, endDate)
-
     const start = new Date(startDate);
     const end = new Date(endDate);
 

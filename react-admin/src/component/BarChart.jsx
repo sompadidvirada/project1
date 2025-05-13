@@ -8,20 +8,29 @@ const BarChart = ({ isDashboard = false, data }) => {
   const colors = tokens(theme.palette.mode);
   const { products = [], data: dataBar } = useBakeryStore();
   const productNames = Array.isArray(products)
-  ? products.map((product) => product.name)
-  : [];
+    ? products.map((product) => product.name)
+    : [];
 
   const productSecon = [" "];
 
-  // Ensure data is an array
+  const keys = productNames.length ? productNames : productSecon;
+
   const chartData = Array.isArray(data) ? data || dataBar : [];
 
-
+  // ✅ Get highest total SellCount across all branches
+  const maxValue =
+    chartData.length > 0
+      ? Math.max(
+          ...chartData.map((item) =>
+            keys.reduce((sum, key) => sum + (item[key] || 0), 0)
+          )
+        ) + 50
+      : 100; // Fallback maxValue when data is empty
 
   return (
     <ResponsiveBar
-      data={chartData} // <-- use the pre-processed data
-      maxValue={800} // <-- dynamic max
+      data={chartData}
+      maxValue={maxValue}
       theme={{
         // added
         axis: {

@@ -3,7 +3,6 @@ const prisma = require("../config/prisma");
 exports.createProduct = async (req, res) => {
   try {
     const { name, price, sellprice, category, lifetime } = req.body;
-    console.log(req.file)
 
     if (!name || !price || !sellprice || !category) {
       return res.status(400).json({ message: `Can't create with emty value.` });
@@ -50,7 +49,6 @@ exports.getProduct = async (req, res) => {
             category:true
         }
     });
-    console.log(Products)
     res.send(Products);
   } catch (err) {
     console.log(err);
@@ -62,7 +60,6 @@ exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price, sellprice, categoryId, lifetime } = req.body;
-    console.log(req.body)
     if (!name || !price || !sellprice || !categoryId || !lifetime) {
       return res.status(400).json({ message: `Can't update with emty value.` });
     }
