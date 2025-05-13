@@ -56,7 +56,6 @@ exports.tracksell = async (req, res) => {
 exports.tracksend = async (req, res) => {
   try {
     const { sendCount, sendAt, userId, productId, brachId } = req.body;
-    console.log(req.body);
     if (!sendCount || !sendAt || !brachId || !userId || !productId) {
       return res.status(400).json({ message: "something went wrong11." });
     }
@@ -108,7 +107,7 @@ exports.tracksend = async (req, res) => {
 exports.trackexp = async (req, res) => {
   try {
     const { expCount, expAt, userId, productId, brachId } = req.body;
-    console.log(req.body);
+
 
     if (!expCount || !expAt || !brachId || !userId || !productId) {
       return res.status(400).json({ message: "something went wrong." });

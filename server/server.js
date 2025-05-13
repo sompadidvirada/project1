@@ -6,19 +6,25 @@ const fs = require("fs");
 const { readdirSync } = require("fs");
 const cors = require("cors");
 
+
+
+
+
 const defaultImage = "public/uploads/nigler.png";
 
 app.use(express.json({ limit: `100mb` }));
 app.use(morgan("dev"));
-app.use(express.static('public'))
+app.use(express.static("public"));
 app.use(
   cors({
-    origin: "*", // Allow all IPs
-    credentials: true, // if using cookies
+    origin: true, // Allow any origin (or specify yours)
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-const socketio = require('socket.io')
 
+app.options("*", cors()); // handle preflight
 
 // Middleware to check if the requested image exists
 app.get("/uploads/:imageName", (req, res) => {
@@ -36,12 +42,6 @@ readdirSync("./routes").map((item) =>
   app.use("/", require("./routes/" + item))
 );
 
-
-const expressServer = app.listen(5003, '0.0.0.0', () => {
+app.listen(5003, "0.0.0.0", () => {
   console.log("API running on port 5003");
 });
-
-
-const io = socketio(expressServer, {
-  
-})

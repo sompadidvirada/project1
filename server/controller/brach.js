@@ -22,7 +22,10 @@ exports.createBrach = async (req, res) => {
 
 exports.getBrach = async (req, res) => {
   try {
+    console.log("hello")
     const brachs = await prisma.brach.findMany();
+
+    console.log(brachs)
     res.send(brachs);
   } catch (err) {
     console.log(err);

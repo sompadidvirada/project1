@@ -7,7 +7,9 @@ const BarChart = ({ isDashboard = false, data }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const { products = [], data: dataBar } = useBakeryStore();
-  const productNames = products.map((product) => product.name);
+  const productNames = Array.isArray(products)
+  ? products.map((product) => product.name)
+  : [];
 
   const productSecon = [" "];
 

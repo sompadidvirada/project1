@@ -91,16 +91,13 @@ const Dashboard = () => {
           <StatBox
             title={
               <Typography variant="laoText">
-                {totalSell ? totalSell.totalSellCount : 0} ອັນ
+                {totalSell ? totalSell.totalSellPrice.toLocaleString() : 0} ກີບ
               </Typography>
             }
             subtitle={
               <Typography variant="laoText">ຍອດຂາຍທັງຫມົດທຸກສາຂາ</Typography>
             }
-            progress={totalSell ? totalSell.totalSellCountPercent : "0.1"}
-            increase={
-              totalSell ? totalSell.totalSellCountPercent * 100 + `%` : "%"
-            }
+            progress={totalSell ? totalSell.totalSellPrice : "0.1"}
             icon={
               <LocalAtmIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -123,7 +120,7 @@ const Dashboard = () => {
           <StatBox
             title={
               <Typography variant="laoText">
-                {totalSell ? totalSell.totalSendCount : 0} ອັນ
+                {totalSell ? totalSell.totalSendPrice.toLocaleString() : 0} ກີບ
               </Typography>
             }
             subtitle={
@@ -154,7 +151,7 @@ const Dashboard = () => {
           <StatBox
             title={
               <Typography variant="laoText">
-                {totalSell ? totalSell.totalExpCount : 0} ອັນ
+                {totalSell ? totalSell.totalExpPrice.toLocaleString() : 0} ກີບ
               </Typography>
             }
             subtitle={
@@ -185,19 +182,14 @@ const Dashboard = () => {
           <StatBox
             title={
               <Typography variant="laoText">
-                {!totalSell || totalSell.totalSellCountBackward === null
+                {!totalSell || totalSell.percentageOfPricetotalExp === null
                   ? "0"
-                  : totalSell.totalSellCountBackward}{" "}
-                ອັນ
+                  : totalSell.percentageOfPricetotalExp}{" "}
+                %
               </Typography>
             }
             subtitle={
-              <Typography variant="laoText">ຍອດຂາຍປຽບທຽບກັບກ່ອນຫນ້າ</Typography>
-            }
-            enable={true}
-            progress={totalSell ? totalSell.totalSellCountPercent : "0.1"}
-            increase={
-              totalSell ? totalSell.compareSellfromPast * 100 + `%` : "%"
+              <Typography variant="laoText">ເປີເຊັນຍອດໝົດອາຍຸ ທຽບຍອດຈັດສົ່ງ</Typography>
             }
             icon={
               <SsidChartIcon

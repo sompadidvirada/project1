@@ -61,7 +61,7 @@ const Product = () => {
     // Check if the product has an image
     if (product.image) {
       // If product has image, create the preview URL
-      const imageUrl = `http://localhost:5003/uploads/${product.image}`;
+      const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${product.image}`;
       setImagePreview(imageUrl); // Set imagePreview to the image URL
     } else {
       setImagePreview(null); // If no image, reset the image preview
@@ -126,7 +126,7 @@ const Product = () => {
       flex: 0.5,
       renderCell: (params) => {
         const imageUrl = params.row.image
-          ? `http://localhost:5003/uploads/${params.row?.image}`
+          ? `${process.env.REACT_APP_API_URL}/uploads/${params.row?.image}`
           : null;
         return imageUrl ? (
           <img

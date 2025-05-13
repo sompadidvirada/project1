@@ -50,6 +50,7 @@ exports.getProduct = async (req, res) => {
             category:true
         }
     });
+    console.log(Products)
     res.send(Products);
   } catch (err) {
     console.log(err);

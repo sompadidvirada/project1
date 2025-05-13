@@ -93,7 +93,7 @@ const Sidebar = () => {
     // Check if the product has an image
     if (product.image) {
       // If product has image, create the preview URL
-      const imageUrl = `http://192.168.1.8:5003/uploads/${product.image}`;
+      const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${product.image}`;
       setImagePreview(imageUrl); // Set imagePreview to the image URL
     } else {
       setImagePreview(null); // If no image, reset the image preview
@@ -135,7 +135,8 @@ const Sidebar = () => {
     if (selectedImage) {
       formData.append("image", selectedImage); // Append the image file if selected
     }
-    const update = await updateUser(formData);
+
+    await updateUser(formData);
 
     // Send the formData with the updated product information
     // Example: await updateProductApi(formData);
@@ -203,13 +204,13 @@ const Sidebar = () => {
                   height="80px"
                   onClick={() =>
                     handleImageClick(
-                      `http://192.168.1.8:5003/uploads/${user.image}`
+                      `${process.env.REACT_APP_API_URL}/uploads/${user.image}`
                     )
                   }
-                  src={`http://192.168.1.8:5003/uploads/${
+                  src={`${process.env.REACT_APP_API_URL}/uploads/${
                     user.image || "nigler.png"
                   }`}
-                  style={{ cursor: "pointer", borderRadius: "50%" }}
+                  style={{ cursor: "pointer", borderRadius: "50%", objectFit:"cover"}}
                 />
               </Box>
               <Box textAlign="center">

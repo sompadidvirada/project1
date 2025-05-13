@@ -55,7 +55,7 @@ const Trackexp = () => {
       flex: 0.2,
       renderCell: (params) => {
         const imageUrl = params.row.image
-          ? `http://192.168.1.8:5003/uploads/${params.row.image}`
+          ? `${process.env.REACT_APP_API_URL}/uploads/${params.row.image}`
           : null;
         return imageUrl ? (
           <img

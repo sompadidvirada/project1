@@ -9,7 +9,7 @@ const { authCheck, adminCheck } = require("../middleware/authCheck");
 const router = express.Router();
 
 router.post("/createbrach", authCheck, createBrach);
-router.get("/getbrachs", authCheck, getBrach);
+router.get("/getbrachs", getBrach);
 router.put("/updatebrach/:id", authCheck, adminCheck, updateBrach);
 router.delete("/deletebrach/:id", authCheck, adminCheck, deleteBrach);
 

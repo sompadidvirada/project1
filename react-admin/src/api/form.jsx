@@ -1,10 +1,7 @@
 import axios from "axios";
 
-
-const BASE_URL = "http://192.168.1.8:5003";
-
 export const createUser = (form, token) => {
-  return axios.post(`${BASE_URL}/createuser`, form, {
+  return axios.post(`${process.env.REACT_APP_API_URL}/createuser`, form, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -12,7 +9,7 @@ export const createUser = (form, token) => {
 };
 
 export const getAllUser = (token) => {
-  return axios.get(`${BASE_URL}/getalluser`, {
+  return axios.get(`${process.env.REACT_APP_API_URL}/getalluser`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -21,7 +18,7 @@ export const getAllUser = (token) => {
 
 export const updateUserRole = (userId, newRole, token) => {
   return axios.put(
-    `${BASE_URL}/updaterole` + userId,
+    `${process.env.REACT_APP_API_URL}/updaterole` + userId,
     { newRole },
     {
       headers: {
@@ -33,7 +30,7 @@ export const updateUserRole = (userId, newRole, token) => {
 
 export const updateUserStatus = (userId, newStatus, token) => {
   return axios.put(
-    `${BASE_URL}/updatestatus` + userId,
+    `${process.env.REACT_APP_API_URL}/updatestatus` + userId,
     { newStatus },
     {
       headers: {

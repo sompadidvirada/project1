@@ -9,6 +9,7 @@ exports.authCheck = async (req, res, next) => {
         if (!headerToken) {
             return res.status(401).json({ message: "No Token, Authorization22" })
         }
+
         const token = headerToken.split(" ")[1]
         const decode = jwt.verify(token, process.env.SECRET)
         req.user = decode

@@ -56,8 +56,8 @@ export default function SelectBrach({
               NONE
             </Typography>
           </MenuItem>
-          {brach?.map((item, index) => {
-            return (
+          {Array.isArray(brach) && brach.length > 0 ? (
+            brach.map((item, index) => (
               <MenuItem key={index} value={item.id}>
                 <Typography
                   variant="laoText"
@@ -67,8 +67,14 @@ export default function SelectBrach({
                   {item.name}
                 </Typography>
               </MenuItem>
-            );
-          })}
+            ))
+          ) : (
+            <MenuItem disabled value="">
+              <Typography variant="h5" color="error">
+                No branches available
+              </Typography>
+            </MenuItem>
+          )}
         </Select>
       </FormControl>
     </div>

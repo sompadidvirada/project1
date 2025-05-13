@@ -31,7 +31,7 @@ const DataTrack = () => {
     const imageUrls = dataTrack
       .flatMap((branch) => branch.detail || []) // Fallback to empty array if `detail` is undefined
       .map((item) =>
-        item.image ? `http://192.168.1.8:5003/uploads/${item.image}` : null
+        item.image ? `${process.env.REACT_APP_API_URL}/uploads/${item.image}` : null
       )
       .filter(Boolean);
   
@@ -83,7 +83,7 @@ const DataTrack = () => {
         flex: 0.2,
         renderCell: (params) => {
           const imageUrl = params.row.image
-            ? `http://192.168.1.8:5003/uploads/${params.row.image}`
+            ? `${process.env.REACT_APP_API_URL}/uploads/${params.row.image}`
             : null;
           return imageUrl ? (
             <img

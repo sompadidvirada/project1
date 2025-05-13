@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const BASE_URL = "http://192.168.1.8:5003";
 
 export const createBrach = (form, token) => {
-  return axios.post(`${BASE_URL}/createbrach`, form , {
+  return axios.post(`${process.env.REACT_APP_API_URL}/createbrach`, form , {
     headers: {
         Authorization: `Bearer ${token}`
     }
@@ -11,7 +10,7 @@ export const createBrach = (form, token) => {
 };
 
 export const updateBrach = (form, id, token) => {
-    return axios.put(`${BASE_URL}/updatebrach/` + id, {brachName: form}, {
+    return axios.put(`${process.env.REACT_APP_API_URL}/updatebrach/` + id, {brachName: form}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -19,7 +18,7 @@ export const updateBrach = (form, id, token) => {
 }
 
 export const deleteBrach = (id, token) => {
-    return axios.delete(`${BASE_URL}/deletebrach/` + id, {
+    return axios.delete(`${process.env.REACT_APP_API_URL}/deletebrach/` + id, {
         headers: {
             Authorization: `Bearer ${token}`
         }

@@ -86,7 +86,7 @@ const SidebarUser = () => {
     // Check if the product has an image
     if (product.image) {
       // If product has image, create the preview URL
-      const imageUrl = `http://192.168.1.8:5003/uploads/${product.image}`;
+      const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${product.image}`;
       setImagePreview(imageUrl); // Set imagePreview to the image URL
     } else {
       setImagePreview(null); // If no image, reset the image preview
@@ -199,10 +199,10 @@ const SidebarUser = () => {
                   height="80px"
                   onClick={() =>
                     handleImageClick(
-                      `http://192.168.1.8:5003/uploads/${user?.image || "nigler.png"}`
+                      `${process.env.REACT_APP_API_URL}/uploads/${user?.image || "nigler.png"}`
                     )
                   }
-                  src={`http://192.168.1.8:5003/uploads/${
+                  src={`${process.env.REACT_APP_API_URL}/uploads/${
                     user?.image || "nigler.png"
                   }`}
                   style={{ cursor: "pointer", borderRadius: "50%" }}

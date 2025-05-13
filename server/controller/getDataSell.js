@@ -1,5 +1,6 @@
 const prisma = require("../config/prisma");
 
+
 const generateColor = (name) => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -69,103 +70,84 @@ exports.getTotalSell = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
 
-    // Convert startDate and endDate to proper Date objects
+    console.log(startDate, endDate)
+
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Validate the start and end dates
+
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return res.status(400).send("Invalid startDate or endDate");
     }
 
-    end.setHours(23, 59, 59, 999); // Ensure endDate includes the entire last day
+    end.setHours(23, 59, 59, 999);
 
-    // Calculate the number of days between the start and end dates
-    const timeDiff = end - start;
-    const shiftDays = Math.floor(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+    console.log(start,end)
 
-    // Calculate the previous date range (shifted by shiftDays)
-    const prevStart = new Date(start);
-    const prevEnd = new Date(end);
-
-    // Shift the previous period (subtracting the number of days from the current range)
-    prevStart.setDate(prevStart.getDate() - shiftDays - 1); // Shift startDate by the number of days between start and end
-    prevEnd.setDate(prevEnd.getDate() - shiftDays - 1); // Shift endDate by the same number of days minus 1 day for the previous period
-
-    // Use aggregate to sum the sellCount for the current period
-    const totalSell = await prisma.trackingsell.aggregate({
-      where: {
-        sellAt: {
-          gte: start,
-          lte: end,
-        },
-      },
-      _sum: {
-        sellCount: true,
-      },
-    });
-
-    // Use aggregate to sum the sellCount for the previous period (shifted backward)
-    const totalSellBackward = await prisma.trackingsell.aggregate({
-      where: {
-        sellAt: {
-          gte: prevStart,
-          lte: prevEnd,
-        },
-      },
-      _sum: {
-        sellCount: true,
-      },
-    });
-
-    const totalSend = await prisma.trackingsend.aggregate({
+    const sendTrack = await prisma.trackingsend.findMany({
       where: {
         sendAt: {
           gte: start,
           lte: end,
         },
       },
-      _sum: {
-        sendCount: true,
+      include: {
+        product: true,
       },
     });
 
-    const totalExp = await prisma.trackingexp.aggregate({
+    const expTrack = await prisma.trackingexp.findMany({
       where: {
         expAt: {
           gte: start,
           lte: end,
         },
       },
-      _sum: {
-        expCount: true,
+      include: {
+        product: true,
       },
     });
 
-    // Calculate the sell percentage based on totalSellCount and totalSendCount
-    let totalSellCountPercent = 0;
-    if (totalSend._sum.sendCount > 0) {
-      totalSellCountPercent =
-        totalSell._sum.sellCount / totalSend._sum.sendCount;
-    }
+    const sellTrack = await prisma.trackingsell.findMany({
+      where:{
+        sellAt: {
+          gte: start,
+          lte: end
+        }
+      },
+      include: {
+        product: true
+      }
+    })
 
-    // Calculate the percentage change between the current and previous period
-    let compareSellfromPast = 0;
-    if (totalSellBackward._sum.sellCount > 0) {
-      compareSellfromPast =
-        (totalSell._sum.sellCount - totalSellBackward._sum.sellCount) /
-        totalSellBackward._sum.sellCount;
-    }
+    // Calculate total send and expired prices
+    const totalSendPrice = sendTrack.reduce((sum, record) => {
+      const price = record.product?.price || 0;
+      return sum + (record.sendCount * price);
+    }, 0);
 
-    // Send the total sum of sellCount and calculated percentages
+    const totalSellPrice = sellTrack.reduce((sum, record) => {
+      const price = record.product?.price || 0;
+      return sum + (record.sellCount * price);
+    }, 0);
+
+    const totalExpPrice = expTrack.reduce((sum, record) => {
+      const price = record.product?.price || 0;
+      return sum + (record.expCount * price);
+    }, 0);
+
+    const percentageOfPricetotalExp =
+      totalSendPrice > 0
+        ? parseFloat(((totalExpPrice / totalSendPrice) * 100).toFixed(2))
+        : 0;
+
     res.json({
-      totalSellCount: totalSell._sum.sellCount,
-      totalSellCountPercent: totalSellCountPercent.toFixed(2), // Round to 2 decimal places
-      totalSellCountBackward: totalSellBackward._sum.sellCount,
-      compareSellfromPast: compareSellfromPast.toFixed(2), // Percentage change from the previous period
-      totalSendCount: totalSend._sum.sendCount,
-      totalExpCount: totalExp._sum.expCount,
+      totalSendPrice,
+      totalExpPrice,
+      totalSellPrice,
+      percentageOfPricetotalExp,
     });
+
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");

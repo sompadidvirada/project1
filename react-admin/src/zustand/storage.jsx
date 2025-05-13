@@ -57,7 +57,10 @@ const BakeryStore = (set, get) => ({
     });
   },
   actionLogin: async (form) => {
-    const res = await axios.post("http://192.168.1.8:5003/login", form);
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}/login`,
+      form
+    );
     set({
       user: res.data.payload,
       token: res.data.token,
@@ -66,11 +69,14 @@ const BakeryStore = (set, get) => ({
   },
   getCategory: async () => {
     const token = get().token;
-    const res = await axios.get("http://192.168.1.8:5003/getcategorys", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getcategorys`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     set({
       categorys: res.data,
     });
@@ -84,14 +90,19 @@ const BakeryStore = (set, get) => ({
   },
   getBrach: async () => {
     const token = get().token;
-    const res = await axios.get("http://192.168.1.8:5003/getbrachs", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    set({
-      brach: res.data,
-    });
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getbrachs`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // optional, depending on your backend
+          },
+        }
+      );
+      set({ brach: res.data });
+    } catch (err) {
+      console.error("Failed to fetch brachs:", err.message);
+    }
   },
   updateUser: async (form) => {
     // Accept form as a parameter
