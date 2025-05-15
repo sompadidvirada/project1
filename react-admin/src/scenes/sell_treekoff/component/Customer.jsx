@@ -9,8 +9,28 @@ import {
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
+import {
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableContainer,
+  Paper,
+} from "@mui/material";
 
 const Customer = () => {
+  const rows = [
+    {
+      name: "ທ້າວ ອາດອຟ ນິກເລີ",
+      billId: 30,
+      totalMenu: "10",
+      totalPrice: "120,000",
+      status: "avalive",
+      update: "01",
+    },
+  ];
+
   return (
     <Box display="flex" flexDirection="column" gap="40px">
       {/* Seacrh Customer Section. */}
@@ -68,6 +88,9 @@ const Customer = () => {
           <Typography variant="laoText" fontSize={25}>
             ຜົນການຄົ້ນຫາ
           </Typography>
+
+          {/** Table Detail User Area */}
+
           <Box>
             <Grid2
               container
@@ -93,14 +116,14 @@ const Customer = () => {
               </Grid2>
 
               {/* Row: ID */}
-              <Grid2 container item xs={12} alignItems="center" gap={35}>
+              <Grid2 container item xs={12} alignItems="center" gap={33}>
                 <Grid2 item xs={2}>
-                  <Typography color="gray" fontSize={30}>
+                  <Typography color="gray" fontSize={30} variant="laoText">
                     ID:
                   </Typography>
                 </Grid2>
                 <Grid2 item xs={10}>
-                  <Typography fontWeight="bold" fontSize={30}>
+                  <Typography fontWeight="bold" fontSize={30} variant="laoText">
                     9
                   </Typography>
                 </Grid2>
@@ -114,7 +137,7 @@ const Customer = () => {
                 </Grid2>
                 <Grid2 item xs={10}>
                   <Typography variant="laoText" fontSize={30}>
-                    Pao
+                    ທ້າວ ອາດອຟ ນິກເລີ
                   </Typography>
                 </Grid2>
               </Grid2>
@@ -127,7 +150,9 @@ const Customer = () => {
                   </Typography>
                 </Grid2>
                 <Grid2 item xs={10}>
-                  <Typography fontSize={30}>51778411</Typography>
+                  <Typography fontSize={30} variant="laoText">
+                    51778411
+                  </Typography>
                 </Grid2>
               </Grid2>
 
@@ -143,8 +168,9 @@ const Customer = () => {
                     color="green"
                     sx={{ textDecoration: "underline" }}
                     fontSize={30}
+                    variant="laoText"
                   >
-                    3,828 ແຕ້ມ
+                    6,000,000 ແຕ້ມ
                   </Typography>
                 </Grid2>
               </Grid2>
@@ -157,7 +183,9 @@ const Customer = () => {
                   </Typography>
                 </Grid2>
                 <Grid2 item xs={10}>
-                  <Typography fontSize={30}>3,828,000 KIP</Typography>
+                  <Typography fontSize={30} variant="laoText">
+                    3,828,000 KIP
+                  </Typography>
                 </Grid2>
               </Grid2>
 
@@ -169,10 +197,58 @@ const Customer = () => {
                   </Typography>
                 </Grid2>
                 <Grid2 item xs={10}>
-                  <Typography fontSize={30}>12:00am 11/11/2021</Typography>
+                  <Typography fontSize={30} variant="laoText">
+                    12:00am 01/09/1939
+                  </Typography>
                 </Grid2>
               </Grid2>
             </Grid2>
+          </Box>
+
+          {/** Table History Bill user */}
+          <Box p={2}>
+            <Typography variant="laoText">
+              ບິນລາຍການທີ່ຍັງບໍ່ສຳເລັດລ່າສຸດ:
+            </Typography>
+            <TableContainer component={Paper} sx={{}}>
+              <Table>
+                <TableHead sx={{ backgroundColor: "white" }}>
+                  <TableRow>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>Date</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>BILL ID</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>TOTAL MENU</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>TOTAL PRICE</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>STATUS</strong>
+                    </TableCell>
+                    <TableCell sx={{ color: "black" }}>
+                      <strong>UPDATE</strong>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+  {rows.map((row, index) => (
+    <TableRow key={index} sx={{ backgroundColor: 'white'}}>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.name}</Typography></TableCell>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.billId}</Typography></TableCell>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.totalMenu}</Typography></TableCell>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.totalPrice}</Typography></TableCell>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.status}</Typography></TableCell>
+      <TableCell sx={{ color: 'black' }}><Typography variant="laoText">{row.update}</Typography></TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+
+              </Table>
+            </TableContainer>
           </Box>
         </Box>
       </Box>

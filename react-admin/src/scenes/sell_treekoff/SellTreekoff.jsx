@@ -367,7 +367,7 @@ const SellTreekoff = () => {
                 </Link>
                 <Link
                   component={RouterLink}
-                  to="/selltreekoff/productdetail"
+                  to="/selltreekoff/checkbill"
                   color="inherit"
                   sx={{
                     display: "flex",
