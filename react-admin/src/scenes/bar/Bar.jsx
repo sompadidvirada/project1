@@ -2,7 +2,6 @@ import { Box } from "@mui/material";
 import Header from "../../component/Header";
 import BarChart from "../../component/BarChart";
 import Calendar from "./Calendar";
-import { useState } from "react";
 import useBakeryStore from "../../zustand/storage";
 
 const Bar = () => {

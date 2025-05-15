@@ -16,7 +16,6 @@ import { tokens } from "../theme";
 const LineChartRecharts = ({ isDashboard = false }) => {
   const dataLine = useBakeryStore((state) => state.dataLine) || [];
   const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
 
   // Convert data to Recharts format
   // Nivo format: [{ id: 'Branch A', data: [{ x: 'Monday', y: 10 }, ...] }, ...]

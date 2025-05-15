@@ -2,7 +2,6 @@ import { Box, Button, TextField, Typography, useTheme } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import useBakeryStore from "../../zustand/storage";
 import { deleteBrach, updateBrach } from "../../api/brach";
 import SnackbarNotification from "../../component/SneakerBar";

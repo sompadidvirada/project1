@@ -8,6 +8,8 @@ body,
   height: 100%;
   width: 100%;
   font-family: "Source San Pro", sans-serif;
+  overflow: auto;
+  overflow-x: hidden;
 }
 .layout {
   display: flex;

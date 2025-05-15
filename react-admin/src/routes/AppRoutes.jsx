@@ -23,11 +23,23 @@ import ProtectUser from "./ProtectUser";
 import LayoutUser from "../scenes/layout/LayoutUser";
 import Pie from "../scenes/pie/Pie";
 import DataTrack from "../scenes/data_track/DataTrack";
+import SellTreekoff from "../scenes/sell_treekoff/SellTreekoff";
+import Customer from "../scenes/sell_treekoff/component/Customer";
+import ProductDetail from "../scenes/sell_treekoff/component/ProductDetail";
+import CheckBill from "../scenes/sell_treekoff/component/CheckBill";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage />,
+  },
+  {
+    path: "/selltreekoff",
+    element: <SellTreekoff />,children: [
+      { path: "customer", element: <Customer/> },
+      { path: "productdetail", element: <ProductDetail/> },
+      { path: "checkbill", element: <CheckBill/> },
+    ],
   },
   {
     path: "/login",
