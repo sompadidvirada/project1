@@ -56,7 +56,7 @@ const Dashboard = () => {
   return (
     <Box m="20px" sx={{
       width: "98%",
-      height: "100%",
+      height: "100vw",
       overflow: "scroll"
     }}>
       {/* HEADER */}
@@ -252,7 +252,7 @@ const Dashboard = () => {
           <Typography variant="laoText" fontWeight="600">
             ຍອດຂາຍແຕ່ລະສາຂາ
           </Typography>
-          <Box height="250px" mt="-20px">
+          <Box height="260px" mt="-20px">
             {data && data.length > 0 ? (
               <BarChart isDashboard={true} data={data} />
             ) : (
@@ -271,7 +271,6 @@ const Dashboard = () => {
           backgroundColor={colors.primary[400]}
           textAlign="center"
           gap="50px"
-          paddingBottom="100px"
           paddingTop="50px"
         >
           <Typography variant="laoText" fontWeight="600" sx={{

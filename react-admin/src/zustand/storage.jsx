@@ -14,6 +14,7 @@ const BakeryStore = (set, get) => ({
   dataLine: null,
   dataPie: null,
   dataTrack: null,
+  totalData: null,
   queryForm: {
     startDate: "", // New state for queryForm
     endDate: "",
@@ -40,6 +41,9 @@ const BakeryStore = (set, get) => ({
   },
   setDataTrack: (newData) => {
     set({ dataTrack: newData }); // <-- Add function to update data
+  },
+  setTotalData: (newData) => {
+    set({ totalData: newData }); // <-- Add function to update data
   },
   logout: () => {
     set({

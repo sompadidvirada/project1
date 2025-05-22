@@ -300,28 +300,19 @@ const Trackexp = () => {
       <Box
         mt="30px"
         display="grid"
-        gridTemplateColumns="repeat(1, 10fr)"
+        gridTemplateColumns="repeat(1, 20fr)"
         gridAutoRows="60px"
         gap="20px"
       >
         {/** Section 1  select calendar and select branches. */}
 
-        <Box
-                  gridColumn="span 1"
-                  backgroundColor={colors.primary[400]}
-                  sx={{
-                    width: "100%",
-                    maxWidth: "100vw", // or something like 95vw
-                    height: "100%",
-                    textDecoration: "none",
-                    alignContent: "center",
-                  }}
-                >
+        <Box gridColumn="span 1" backgroundColor={colors.primary[400]}>
           <Box
             display="flex"
             justifyContent="center"
             alignItems="center"
             gap="20px"
+            flexWrap="wrap"
           >
             <Box>
               <CalendarExp
@@ -348,68 +339,52 @@ const Trackexp = () => {
         {/**Section 2 insert data */}
 
         <Box
-          gridColumn="span 1"
-          gridRow="span 9"
-          backgroundColor={colors.primary[400]}
           sx={{
-            width: "100%",
-            maxWidth: "100vw", // ensures it fits within screen width
-            height: "auto", // let it grow with content
-            textDecoration: "none",
-            overflowX: "auto", // allow horizontal scroll on small screens
+            height: "calc(100vh - 250px)",
+            "& .MuiDataGrid-root": {
+              border: "none",
+            },
+            "& .MuiDataGrid-cell": {
+              borderBottom: "none",
+            },
+            "& .name-column--cell": {
+              color: colors.greenAccent[300],
+            },
+            "& .MuiDataGrid-columnHeaders": {
+              backgroundColor: colors.blueAccent[700],
+              borderBottom: "none",
+            },
+            "& .MuiDataGrid-virtualScroller": {
+              backgroundColor: colors.primary[400],
+            },
+            "& .MuiDataGrid-footerContainer": {
+              borderTop: "none",
+              backgroundColor: colors.blueAccent[700],
+            },
+            "& .MuiCheckbox-root": {
+              color: `${colors.greenAccent[200]} !important`,
+            },
+            "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+              color: `${colors.grey[100]} !important`,
+            },
           }}
         >
-          <Box
-            flexGrow={1}
-            minHeight="0"
-            sx={{
-              overflow: "auto", // Enable scrolling inside the box
-              maxHeight: "calc(100vh - 250px)", // Adjust 250px to your header and margin height
-              "& .MuiDataGrid-root": {
-                border: "none",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none",
-              },
-              "& .name-column--cell": {
-                color: colors.greenAccent[300],
-              },
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: colors.blueAccent[700],
-                borderBottom: "none",
-              },
-              "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: colors.primary[400],
-              },
-              "& .MuiDataGrid-footerContainer": {
-                borderTop: "none",
-                backgroundColor: colors.blueAccent[700],
-              },
-              "& .MuiCheckbox-root": {
-                color: `${colors.greenAccent[200]} !important`,
-              },
-              "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: `${colors.grey[100]} !important`,
-              },
-            }}
-          >
-            {selectFormtracksell.expAt && selectFormtracksell.brachId ? (
-              <DataGrid
-                rows={products}
-                columns={columns}
-                autoHeight // let it grow to fit content
-                sx={{ width: "100%" }}
-              />
-            ) : (
-              <Typography
-                variant="laoText"
-                fontWeight="bold"
-                color={colors.grey[100]}
-              >
-                "ເລືອກວັນທີ່ ແລະ ສາຂາທີ່ຕ້ອງການເພີ່ມຂໍ້ມູນ"
-              </Typography>
-            )}
-          </Box>
+          {selectFormtracksell.expAt && selectFormtracksell.brachId ? (
+            <DataGrid
+              rows={products}
+              columns={columns}
+              autoHeight // let it grow to fit content
+              sx={{ width: "100%" }}
+            />
+          ) : (
+            <Typography
+              variant="laoText"
+              fontWeight="bold"
+              color={colors.grey[100]}
+            >
+              "ເລືອກວັນທີ່ ແລະ ສາຂາທີ່ຕ້ອງການເພີ່ມຂໍ້ມູນ"
+            </Typography>
+          )}
         </Box>
       </Box>
       {/** image modal */}
@@ -437,7 +412,6 @@ const Trackexp = () => {
               alt="Large Preview"
               style={{
                 width: "100%",
-                height: "800px",
                 maxHeight: "90vh",
                 overflow: "hidden",
               }}

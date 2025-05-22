@@ -228,7 +228,7 @@ const DataTrack = () => {
                   alignItems="center"
                   py={5}
                 >
-                  <CircularProgress />
+                  <CircularProgress style={{ color: 'white'}}/>
                 </Box>
               }
             >

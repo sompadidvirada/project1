@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -124,6 +124,12 @@ const Sidebar = () => {
       reader.readAsDataURL(file); // Read the file as a data URL
     }
   };
+
+  useEffect(() => {
+  // Trigger window resize event
+  const resizeEvent = new Event('resize');
+  window.dispatchEvent(resizeEvent);
+}, [isCollapsed]); // ← You need to pass this prop down from Sidebar
 
   const handleSubmitEdit = async () => {
     // Create a FormData object to send the data and image together
@@ -392,6 +398,13 @@ const Sidebar = () => {
             <Item
               title="Data Track"
               to="/admin/datatrack"
+              icon={<DeviceHubIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="TOTAL DATA"
+              to="/admin/totaldatatrack"
               icon={<DeviceHubIcon />}
               selected={selected}
               setSelected={setSelected}

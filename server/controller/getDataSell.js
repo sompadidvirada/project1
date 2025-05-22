@@ -1,6 +1,5 @@
 const prisma = require("../config/prisma");
 
-
 const generateColor = (name) => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
@@ -73,14 +72,13 @@ exports.getTotalSell = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return res.status(400).send("Invalid startDate or endDate");
     }
 
     end.setHours(23, 59, 59, 999);
 
-    console.log(start,end)
+    console.log(start, end);
 
     const sendTrack = await prisma.trackingsend.findMany({
       where: {
@@ -107,31 +105,31 @@ exports.getTotalSell = async (req, res) => {
     });
 
     const sellTrack = await prisma.trackingsell.findMany({
-      where:{
+      where: {
         sellAt: {
           gte: start,
-          lte: end
-        }
+          lte: end,
+        },
       },
       include: {
-        product: true
-      }
-    })
+        product: true,
+      },
+    });
 
     // Calculate total send and expired prices
     const totalSendPrice = sendTrack.reduce((sum, record) => {
       const price = record.product?.price || 0;
-      return sum + (record.sendCount * price);
+      return sum + record.sendCount * price;
     }, 0);
 
     const totalSellPrice = sellTrack.reduce((sum, record) => {
       const price = record.product?.price || 0;
-      return sum + (record.sellCount * price);
+      return sum + record.sellCount * price;
     }, 0);
 
     const totalExpPrice = expTrack.reduce((sum, record) => {
       const price = record.product?.price || 0;
-      return sum + (record.expCount * price);
+      return sum + record.expCount * price;
     }, 0);
 
     const percentageOfPricetotalExp =
@@ -145,7 +143,6 @@ exports.getTotalSell = async (req, res) => {
       totalSellPrice,
       percentageOfPricetotalExp,
     });
-
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");
@@ -302,6 +299,7 @@ const generateUniqueColors = (count) => {
 exports.dataTrack = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
+    console.log(startDate, endDate);
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -392,6 +390,86 @@ exports.dataTrack = async (req, res) => {
     });
 
     res.send(result);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Something went wrong 500.` });
+  }
+};
+
+exports.TotalData = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const fecthProducts = await prisma.product.findMany();
+
+    const fecthBrach = await prisma.brach.findMany({
+      include: {
+        tracsell: {
+          where: {
+            sellAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        tracksend: {
+          where: {
+            sendAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+        trackexp: {
+          where: {
+            expAt: {
+              gte: start,
+              lte: end,
+            },
+          },
+        },
+      },
+    });
+
+    // 🧠 Aggregate by product across all branches
+    const totalDetail = fecthProducts.map((product) => {
+      let totalSell = 0;
+      let totalSend = 0;
+      let totalExp = 0;
+
+      fecthBrach.forEach((branch) => {
+        totalSell += branch.tracsell
+          .filter((s) => s.productId === product.id)
+          .reduce((sum, s) => sum + s.sellCount, 0);
+
+        totalSend += branch.tracksend
+          .filter((s) => s.productId === product.id)
+          .reduce((sum, s) => sum + s.sendCount, 0);
+
+        totalExp += branch.trackexp
+          .filter((s) => s.productId === product.id)
+          .reduce((sum, s) => sum + s.expCount, 0);
+      });
+
+      return {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        sellPrice: product.sellprice,
+        image: product.image,
+        totalSell,
+        totalSend,
+        totalExp,
+        totalPriceSend: product.price * totalSend,
+        totalPriceSell: product.sellprice * totalSell,
+        totalPriceEXP: product.price * totalExp,
+      };
+    });
+
+    res.send({ totalDetail });
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `Something went wrong 500.` });

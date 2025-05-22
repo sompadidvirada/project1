@@ -126,3 +126,11 @@ export const getDataTrack = (date, token) => {
     },
   });
 };
+
+export const getTotalData = (date, token) => {
+  return axios.post(`${process.env.REACT_APP_API_URL}/totaldata`, date, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

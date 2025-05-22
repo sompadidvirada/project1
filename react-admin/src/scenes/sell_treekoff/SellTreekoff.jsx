@@ -1,26 +1,74 @@
-import {
-  Box,
-  Breadcrumbs,
-  Button,
-  Card,
-  Link,
-  CardContent,
-  CardMedia,
-  Typography,
-} from "@mui/material";
-import React, { useState } from "react";
-import LocationCityIcon from "@mui/icons-material/LocationCity";
-import MonitorIcon from "@mui/icons-material/Monitor";
-import { Outlet, Link as RouterLink } from "react-router-dom";
-import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
-import PersonIcon from "@mui/icons-material/Person";
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import LocalAtmIcon from "@mui/icons-material/LocalAtm";
-import { useLocation } from "react-router-dom";
+import { Box } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom/client";
+import CustomerDisplay from "./component/CustomerDisplay";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import EmployeeDetail from "./component/EmployeeDetail";
+import OnlineCustomer from "./component/OnlineCustomer";
+import MenuDetailAndBread from "./component/MenuDetailAndBread";
+import { CacheProvider } from "@emotion/react";
+import createCache from "@emotion/cache";
 
 const SellTreekoff = () => {
+  const theme = createTheme();
   const [selectOnline, setSelectOnline] = useState(false);
-  const location = useLocation();
+  const popupRef = useRef(null);
+  const customerRootRef = useRef(null);
+
+  const openWindow = () => {
+    const customerWindow = window.open(
+      "",
+      "Customer Screen",
+      "width=800,height=800,left=1000,top=100"
+    );
+
+    if (customerWindow) {
+      popupRef.current = customerWindow;
+      customerWindow.document.title = "Customer Display";
+
+      // Inject custom styles if needed
+      const style = customerWindow.document.createElement("style");
+      style.textContent = `
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #222d32;
+        font-family: 'Noto Sans Lao', sans-serif;
+      }
+    `;
+      customerWindow.document.head.appendChild(style);
+
+      // Create a container div for React rendering
+      const container = customerWindow.document.createElement("div");
+      customerWindow.document.body.appendChild(container);
+
+      // 💡 Create Emotion cache for the new window
+      const emotionCache = createCache({
+        key: "mui-popup",
+        container: customerWindow.document.head,
+      });
+
+      customerRootRef.current = ReactDOM.createRoot(container);
+      customerRootRef.current.render(
+        <CacheProvider value={emotionCache}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <CustomerDisplay />
+          </ThemeProvider>
+        </CacheProvider>
+      );
+    }
+
+    return () => {
+      popupRef.current?.close();
+    };
+  };
+
+  useEffect(() => {
+    openWindow();
+  }, []);
+
   return (
     <Box
       sx={{
@@ -33,365 +81,13 @@ const SellTreekoff = () => {
     >
       <Box display="flex" width="100%" height="100%" gap="30px">
         <Box display="flex" flexDirection="column" width="32%" gap="15px">
-          <Box
-            display="flex"
-            flexDirection="column"
-            sx={{
-              height: "350px",
-              bgcolor: "blue",
-              borderRadius: "5px",
-            }}
-          >
-            <Card
-              sx={{
-                bgcolor: "#ffffff",
-                height: "100%",
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <CardMedia
-                sx={{
-                  height: "115px",
-                  width: "115px",
-                  borderRadius: "50%",
-                  marginTop: 2,
-                }}
-                image="/assests/user.png"
-                title="profile picture"
-              />
-              <CardContent
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "90%",
-                  borderBottom: "1px solid black",
-                }}
-              >
-                <Typography
-                  variant="laoText"
-                  sx={{
-                    color: "black",
-                    fontWeight: "bold",
-                    fontSize: 20,
-                  }}
-                >
-                  ທ້າວ ອາດອຟ ນິກເລີ
-                </Typography>
-                <Typography
-                  variant="laoText"
-                  sx={{
-                    color: "black",
-                    fontSize: 12,
-                  }}
-                >
-                  ຫົວໜ້າສູນຝືກອົບຮົມ
-                </Typography>
-              </CardContent>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignContent: "center",
-                  width: "90%",
-                  paddingLeft: "0",
-                  paddingRight: "0",
-                }}
-              >
-                <Typography variant="laoText" color="black" fontWeight="bold">
-                  ປະຈຳສາຂາ
-                </Typography>
-                <Typography variant="laoText" color="black" display="flex">
-                  <LocationCityIcon />
-                  ສຳນັກງານໃຫ່ຍ
-                </Typography>
-              </CardContent>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignContent: "center",
-                  width: "90%",
-                  borderBottom: "1px solid black",
-                  paddingLeft: "0",
-                  paddingRight: "0",
-                }}
-              >
-                <Typography variant="laoText" color="black" fontWeight="bold">
-                  ແຕ້ມສະສົມພະນັກງານ
-                </Typography>
-                <Typography variant="laoText" color="black" display="flex">
-                  1
-                </Typography>
-              </CardContent>
-            </Card>
-          </Box>
-          <Box
-            sx={{
-              bgcolor: "green",
-              height: "350px",
-              borderRadius: "5px",
-            }}
-          >
-            <Card
-              sx={{
-                bgcolor: "#ffffff",
-                height: "100%",
-                width: "100%",
-                color: "black",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <CardContent
-                sx={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  borderBottom: "1px solid black",
-                  width: "90%",
-                }}
-              >
-                <MonitorIcon
-                  sx={{
-                    alignSelf: "center",
-                    marginRight: 1,
-                  }}
-                />
-                <Typography variant="laoText" sx={{ fontSize: 20 }}>
-                  ເລືອກໜ້າຕ່າງການຂາຍ
-                </Typography>
-              </CardContent>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  borderBottom: "1px solid black",
-                  width: "90%",
-                }}
-              >
-                <Button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                    gap: 20,
-                    width: "100%",
-                    height: "100%",
-                  }}
-                >
-                  <CardMedia
-                    sx={{ height: 50, width: 74 }}
-                    image="/assests/TK.png"
-                    title="TREEKOFF"
-                  />
-                  <Typography
-                    variant="h5"
-                    color="black"
-                    fontWeight="bold"
-                    sx={{
-                      display: "flex",
-                      color: "blue",
-                    }}
-                  >
-                    {" "}
-                    CUSTOMER SCREEN
-                  </Typography>
-                </Button>
-              </CardContent>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  borderBottom: "1px solid black",
-                  width: "90%",
-                }}
-              >
-                <Button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                    gap: 20,
-                    width: "100%",
-                    height: "100%",
-                  }}
-                  onClick={() => setSelectOnline(false)}
-                >
-                  <CardMedia
-                    sx={{ height: 50, width: 74 }}
-                    image="/assests/TK.png"
-                    title="TREEKOFF"
-                  />
-                  <Typography
-                    variant="h5"
-                    color="black"
-                    fontWeight="bold"
-                    sx={{
-                      display: "flex",
-                      color: "blue",
-                    }}
-                  >
-                    {" "}
-                    TREEKOFF
-                  </Typography>
-                </Button>
-              </CardContent>
-              <CardContent
-                sx={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                  borderBottom: "1px solid black",
-                  width: "90%",
-                }}
-              >
-                <Button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "start",
-                    gap: 20,
-                    width: "100%",
-                    height: "100%",
-                  }}
-                  onClick={() => setSelectOnline(true)}
-                >
-                  <CardMedia
-                    sx={{ height: 50, width: 74 }}
-                    image="/assests/TK.png"
-                    title="TREEKOFF"
-                  />
-                  <Typography
-                    variant="h5"
-                    color="black"
-                    fontWeight="bold"
-                    sx={{
-                      display: "flex",
-                      color: "blue",
-                    }}
-                  >
-                    <PhoneAndroidIcon /> TREEKOFF(ONLINE)
-                  </Typography>
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
+          <EmployeeDetail />
+          <OnlineCustomer
+            setSelectOnline={setSelectOnline}
+            openWindow={openWindow}
+          />
         </Box>
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-            bgcolor: "yellow",
-          }}
-        >
-          {selectOnline ? (
-            <Card
-              sx={{
-                bgcolor: "#ffffff",
-                height: "100%",
-                width: "100%",
-                color: "black",
-              }}
-            >
-              This is for onlie
-            </Card>
-          ) : (
-            <Card
-              sx={{
-                bgcolor: "#ffffff",
-                height: "100%",
-                width: "100%",
-                color: "black",
-              }}
-            >
-              <Breadcrumbs
-                aria-label="breadcrumb"
-                sx={{
-                  color: "black",
-                  height: "60px",
-                  borderBottom: "1px solid black",
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  px: 2,
-                }}
-              >
-                <Link
-                  component={RouterLink}
-                  to="/selltreekoff/customer"
-                  color="inherit"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    bgcolor:
-                      location.pathname === "/selltreekoff/customer"
-                        ? "green"
-                        : "transparent",
-                    padding: 1,
-                    borderRadius: "5px",
-                    textDecoration: "none",
-                  }}
-                >
-                  <PersonIcon />
-                  <Typography variant="laoText">
-                    ເຂົ້າຊູ່ສະມາຊິກລູກຄ້າ
-                  </Typography>
-                </Link>
-                <Link
-                  component={RouterLink}
-                  to="/selltreekoff/productdetail"
-                  color="inherit"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    bgcolor:
-                      location.pathname === "/selltreekoff/productdetail"
-                        ? "green"
-                        : "transparent",
-                    padding: 1,
-                    borderRadius: "5px",
-                    textDecoration: "none",
-                  }}
-                >
-                  <LocalAtmIcon />
-                  <Typography variant="laoText">ລາຍການບິນສິນຄ້າ</Typography>
-                </Link>
-                <Link
-                  component={RouterLink}
-                  to="/selltreekoff/checkbill"
-                  color="inherit"
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 1,
-                    bgcolor:
-                      location.pathname === "/selltreekoff/checkbill"
-                        ? "green"
-                        : "transparent",
-                    padding: 1,
-                    borderRadius: "5px",
-                    textDecoration: "none",
-                  }}
-                >
-                  <FormatListBulletedIcon />
-                  <Typography variant="laoText">ຈ່າຍເງີນ</Typography>
-                </Link>
-              </Breadcrumbs>
-              <CardContent>
-                <Outlet />
-              </CardContent>
-            </Card>
-          )}
-        </Box>
+        <MenuDetailAndBread selectOnline={selectOnline} />
       </Box>
     </Box>
   );

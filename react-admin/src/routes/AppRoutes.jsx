@@ -27,6 +27,8 @@ import SellTreekoff from "../scenes/sell_treekoff/SellTreekoff";
 import Customer from "../scenes/sell_treekoff/component/Customer";
 import ProductDetail from "../scenes/sell_treekoff/component/ProductDetail";
 import CheckBill from "../scenes/sell_treekoff/component/CheckBill";
+import Apps from "../scenes/sell_treekoff/component/test";
+import TotalDataTrack from "../scenes/totalDataTrack/TotalDataTrack";
 
 const router = createBrowserRouter([
   {
@@ -36,9 +38,10 @@ const router = createBrowserRouter([
   {
     path: "/selltreekoff",
     element: <SellTreekoff />,children: [
-      { path: "customer", element: <Customer/> },
+      { index: true, element: <Customer/> },
       { path: "productdetail", element: <ProductDetail/> },
       { path: "checkbill", element: <CheckBill/> },
+      { path: "test", element: <Apps/> },
     ],
   },
   {
@@ -68,7 +71,8 @@ const router = createBrowserRouter([
       { path: "pie", element: <Pie /> },
       { path: "line", element: <Line /> },
       { path: "geography", element: <GeographyChart /> },
-      { path: "datatrack", element: <DataTrack /> }
+      { path: "datatrack", element: <DataTrack /> },
+      { path: "totaldatatrack", element: <TotalDataTrack /> }
 
     ],
   },

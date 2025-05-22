@@ -36,7 +36,6 @@ const AddProduct = () => {
 
   const handleFormSubmit = async (values, { resetForm }) => {
     try {
-      console.log(values);
       const formData = new FormData();
 
       // Append all other form fields
@@ -234,7 +233,7 @@ const AddProduct = () => {
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
               <Button type="submit" color="secondary" variant="contained">
-                Create New User
+                Create New Product
               </Button>
             </Box>
           </form>
