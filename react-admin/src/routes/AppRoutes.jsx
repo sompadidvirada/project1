@@ -1,4 +1,3 @@
-import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LandingPage from "../scenes/layout/LandingPage";
 import LayoutAdmin from "../scenes/layout/LayoutAdmin";
@@ -23,26 +22,12 @@ import ProtectUser from "./ProtectUser";
 import LayoutUser from "../scenes/layout/LayoutUser";
 import Pie from "../scenes/pie/Pie";
 import DataTrack from "../scenes/data_track/DataTrack";
-import SellTreekoff from "../scenes/sell_treekoff/SellTreekoff";
-import Customer from "../scenes/sell_treekoff/component/Customer";
-import ProductDetail from "../scenes/sell_treekoff/component/ProductDetail";
-import CheckBill from "../scenes/sell_treekoff/component/CheckBill";
-import Apps from "../scenes/sell_treekoff/component/test";
 import TotalDataTrack from "../scenes/totalDataTrack/TotalDataTrack";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LandingPage />,
-  },
-  {
-    path: "/selltreekoff",
-    element: <SellTreekoff />,children: [
-      { index: true, element: <Customer/> },
-      { path: "productdetail", element: <ProductDetail/> },
-      { path: "checkbill", element: <CheckBill/> },
-      { path: "test", element: <Apps/> },
-    ],
   },
   {
     path: "/login",

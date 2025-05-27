@@ -33,6 +33,8 @@ model product {
   name       String
   price      Int
   sellprice  Int
+  avilable   Boolean        @default(true)
+  status     String         @default("A")
   lifetime   Int            @default(7)
   image      String?
   tracksell  trackingsell[]
@@ -57,7 +59,7 @@ model trackingsell {
   sellDay   String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade )
+  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
@@ -70,7 +72,7 @@ model trackingsend {
   sendDay   String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id],onDelete: Cascade)
+  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
@@ -83,7 +85,7 @@ model trackingexp {
   expDay    String
   User      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   product  @relation(fields: [productId], references: [id],onDelete: Cascade)
+  product   product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int

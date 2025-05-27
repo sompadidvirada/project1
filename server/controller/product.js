@@ -45,9 +45,9 @@ exports.createProduct = async (req, res) => {
 exports.getProduct = async (req, res) => {
   try {
     const Products = await prisma.product.findMany({
-        include:{
-            category:true
-        }
+      include: {
+        category: true,
+      },
     });
     res.send(Products);
   } catch (err) {
@@ -89,7 +89,7 @@ exports.updateProduct = async (req, res) => {
         name: name,
         price: Number(price),
         sellprice: Number(sellprice),
-        lifetime:Number(lifetime),
+        lifetime: Number(lifetime),
         categoryId: Number(categoryId),
         image: req.file.filename,
       },
@@ -117,5 +117,27 @@ exports.deleteProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `Something went wrong.` });
+  }
+};
+
+exports.suspendProduct = async (req, res) => {
+  try {
+    const { id } = req.params
+    console.log(req.params)
+    const { updateStatus } = req.body;
+    if (!id) {
+      return res.send(`Product ID requie !!`);
+    }
+    const suspenProudct = await prisma.product.update({
+      where: {
+        id: Number(id)
+      }, data: {
+        avilable: updateStatus
+      }
+    });
+    res.send(suspenProudct)
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
   }
 };

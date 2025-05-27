@@ -23,9 +23,11 @@ import useBakeryStore from "../../zustand/storage";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../component/Header";
-import { deleteProduct, updateProduct } from "../../api/product";
+import { deleteProduct, updateAviableProduct, updateProduct } from "../../api/product";
 import SnackbarNotification from "../../component/SneakerBar";
 import { NumericFormat } from "react-number-format";
+import DoNotTouchIcon from '@mui/icons-material/DoNotTouch';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 const Product = () => {
   const token = useBakeryStore((state) => state.token);
@@ -39,6 +41,7 @@ const Product = () => {
   const [severity, setSeverity] = useState("success"); // "success" or "error"
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [aviableStatus, setAviableStatus] = useState(true)
 
   // Modal state and form data
   const [open, setOpen] = useState(false);
@@ -232,6 +235,31 @@ const Product = () => {
                 },
               }}
             />
+            {
+              products.avilable === true ? (
+                <VpnKeyIcon 
+                onClick={()=> handleAviablefalse(params.row.id, false)}
+                sx={{
+                cursor: "pointer",
+                color: colors.greenAccent[500],
+                "&:hover": {
+                  color: colors.redAccent[100],
+                },
+              }}
+                />
+              ) : (
+                <DoNotTouchIcon
+                onClick={()=> handleAviabletrue(params.row.id, true)}
+                sx={{
+                cursor: "pointer",
+                color: colors.greenAccent[500],
+                "&:hover": {
+                  color: colors.greenAccent[100],
+                },
+              }}
+                />
+              )
+            }
           </Box>
         );
       },
@@ -269,6 +297,28 @@ const Product = () => {
     setOpenImageModal(false);
     setSelectedImageUrl(null);
   };
+
+  const handleAviabletrue = async (id, aviableStatus) => {
+    try {
+      setAviableStatus(true)
+      const updateAviable = await updateAviableProduct(id,aviableStatus)
+      console.log(updateAviable)
+      getProdct()
+    } catch (err){
+      console.log(err)
+    }
+  }
+  
+  const handleAviablefalse = async (id, aviableStatus) => {
+    try {
+      setAviableStatus(false)
+      const updateAviable = await updateAviableProduct(id,aviableStatus)
+      console.log(updateAviable)
+      getProdct()
+    } catch (err){
+      console.log(err)
+    }
+  }
 
   return (
     <Box m="20px">

@@ -32,3 +32,7 @@ export const deleteProduct = (id, token) => {
     },
   });
 };
+
+export const updateAviableProduct = (id, data) => {
+  return axios.put(`${process.env.REACT_APP_API_URL}/updateavilable/${id}`,data )
+}

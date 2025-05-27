@@ -36,6 +36,8 @@ app.get("/uploads/:imageName", (req, res) => {
     res.sendFile(path.join(__dirname, defaultImage));
   }
 });
+
+
 readdirSync("./routes").map((item) =>
   app.use("/", require("./routes/" + item))
 );

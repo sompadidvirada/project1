@@ -20,11 +20,11 @@ const BarChart = ({ isDashboard = false, data }) => {
   // ✅ Get highest total SellCount across all branches
   const maxValue =
     chartData.length > 0
-      ? Math.max(
+      ?  Math.max(
           ...chartData.map((item) =>
             keys.reduce((sum, key) => sum + (item[key] || 0), 0)
           )
-        ) + 50
+        ) * 1.2
       : 100; // Fallback maxValue when data is empty
 
   return (

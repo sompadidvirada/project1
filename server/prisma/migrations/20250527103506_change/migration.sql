@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `product` ADD COLUMN `avilable` BOOLEAN NOT NULL DEFAULT true,
+    ADD COLUMN `status` VARCHAR(191) NOT NULL DEFAULT 'A';
