@@ -15,6 +15,7 @@ const BakeryStore = (set, get) => ({
   dataPie: null,
   dataTrack: null,
   totalData: null,
+  calendar: null,
   queryForm: {
     startDate: "", // New state for queryForm
     endDate: "",
@@ -103,6 +104,14 @@ const BakeryStore = (set, get) => ({
         }
       );
       set({ brach: res.data });
+    } catch (err) {
+      console.error("Failed to fetch brachs:", err.message);
+    }
+  }, getCalendar: async (id) => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getcalendar/${id}`);
+      set({ calendar: res.data });
     } catch (err) {
       console.error("Failed to fetch brachs:", err.message);
     }

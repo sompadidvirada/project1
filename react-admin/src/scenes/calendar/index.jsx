@@ -24,7 +24,13 @@ import Slide from "@mui/material/Slide";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
 import useBakeryStore from "../../zustand/storage";
-import { createCalendar } from "../../api/calendar";
+import { createCalendar, deleteCalendar, updateCalendar } from "../../api/calendar";
+import { useEffect } from "react";
+import dayjs from "dayjs";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -37,13 +43,22 @@ const Calendar = () => {
   const [open, setOpen] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventContext, setNewEventContext] = useState("");
+  const calendar = useBakeryStore((state) => state.calendar)
+  const getCalendar = useBakeryStore((state) => state.getCalendar)
+  const user = useBakeryStore((state) => state.user);
   const [newEvent, setNewEvent] = useState({
     suplyer: "",
     description: "",
     poLink: "",
   });
-  const user = useBakeryStore((state) => state.user);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [eventDetailOpen, setEventDetailOpen] = useState(false);
+  const [startDate, setStartDate] = useState(dayjs().startOf("month"));
+  const [endDate, setEndDate] = useState(dayjs().endOf("month"));
 
+  useEffect(() => {
+    getCalendar(user.id)
+  }, [])
   const [selectedDateInfo, setSelectedDateInfo] = useState(null); // for storing the calendar selection
 
   const handleClickOpen = () => {
@@ -78,8 +93,8 @@ const Calendar = () => {
 
       const formData = {
         suplyer: newEvent.suplyer,
-        polink: newEvent.poLink,
-        discription: newEvent.description,
+        polink: newEvent.poLink || "",
+        discription: newEvent.description || "",
         userId: user.id,
         date: new Date(selectedDateInfo.startStr), // converts string to Date
       };
@@ -87,7 +102,7 @@ const Calendar = () => {
 
       const respone = await createCalendar(formData)
 
-      console.log(respone)
+      getCalendar(user.id)
 
       setOpen(false);
       setSelectedDateInfo(null);
@@ -95,21 +110,78 @@ const Calendar = () => {
     }
   };
 
-  const handleEventClick = (selected) => {
-    if (window.confirm(`ຢືນຢັນການລົບ`)) {
-      selected.event.remove();
+  const handleEventClick = async (selected) => {
+    const confirmed = window.confirm(`ຢືນຢັນການລົບ`);
+    if (confirmed) {
+      try {
+        const eventId = selected.event.id;
+
+        // 👉 Call your delete API here
+        await deleteCalendar(eventId); // You'll define this in your `api/calendar.js`
+
+        // 👉 Remove the event from the calendar UI
+        selected.event.remove();
+
+        // 👉 Refresh the calendar state from backend
+        getCalendar(user.id);
+
+        console.log(`Event ${eventId} deleted successfully.`);
+      } catch (error) {
+        console.error("Failed to delete event:", error);
+        alert("ລົບເຫດການບໍ່ສຳເລັດ");
+      }
     }
   };
+
+
   const handleInputChange = (field) => (e) => {
     setNewEvent((prev) => ({
       ...prev,
       [field]: e.target.value,
     }));
   };
+  const handleEventDrop = async (info) => {
+    const { event } = info;
+
+    const updatedData = {
+      suplyer: event.title,
+      polink: event.extendedProps?.poLink || "",
+      discription: event.extendedProps?.description || "",
+      date: new Date(event.start),
+    };
+
+    // Assuming your event has a unique id stored in `event.id`
+    console.log(updatedData)
+    const updateCalen = await updateCalendar(event.id, updatedData)
+
+    console.log(`Update success,${updateCalen}`)
+
+    // Refresh events
+    getCalendar(user.id);
+  };
+
+
 
   return (
     <Box m="20px">
-      <Header title="CALENDAR" subtitle="Full Calendar Interactive Page." />
+      <Header title="CALENDAR" />
+      <Box display={'flex'} marginBottom={2}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <DatePicker
+              label="Start Date"
+              value={startDate}
+              onChange={(newValue) => setStartDate(newValue)}
+            />
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+            />
+          </div>
+        </LocalizationProvider>
+
+      </Box>
       <Box display="flex" justifyContent="space-between">
         {/**CALENDAR SIDE BAR */}
         <Box
@@ -117,46 +189,52 @@ const Calendar = () => {
           backgroundColor={colors.primary[400]}
           p="15px"
           borderRadius="4px"
+          height={550}
+          overflow={'auto'}
         >
-          <Typography variant="h5">Event</Typography>
+
+          <Typography fontFamily={'Noto Sans Lao'}>ລາຍລະອຽດ</Typography>
           <List>
-            {currentEvents.map((event, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  backgroundColor: colors.blueAccent[700],
-                  margin: "10px 0",
-                  borderRadius: "2px",
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Typography variant="h6">{event.title}</Typography>
-                <Typography variant="body2">
-                  {formatDate(event.start, {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </Typography>
-                <Typography variant="body2">
-                  Desc: {event.extendedProps?.description}
-                </Typography>
-                <Typography variant="body2" component="span" sx={{ mr: 1 }}>
-                  ລີ້ງພີໂອ:
-                </Typography>
-                <Link
-                  href={event.extendedProps?.poLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  underline="hover"
-                  color="primary"
+            {calendar
+              .filter((event) => {
+                const eventDate = dayjs(event.start).startOf('day');
+                return (
+                  eventDate.isSame(startDate, 'day') ||
+                  eventDate.isSame(endDate, 'day') ||
+                  (eventDate.isAfter(startDate, 'day') && eventDate.isBefore(endDate, 'day'))
+                );
+              })
+              .map((event, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    backgroundColor: colors.greenAccent[500],
+                    margin: "10px 0",
+                    borderRadius: "2px",
+                    cursor: "pointer"
+                  }}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setEventDetailOpen(true);
+                  }}
                 >
-                  {event.extendedProps?.poLink}
-                </Link>
-              </ListItem>
-            ))}
+                  <Box padding={0}>
+                    <Typography fontFamily={'Noto Sans Lao'} fontWeight="bold">
+                      {event.title}
+                    </Typography>
+                    <Typography fontFamily={'Noto Sans Lao'}>
+                      {formatDate(event.start, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Typography>
+                  </Box>
+                </ListItem>
+              ))}
           </List>
+
+
         </Box>
         {/**CALENDAR */}
 
@@ -182,6 +260,8 @@ const Calendar = () => {
             select={handleDateClick}
             eventClick={handleEventClick}
             eventsSet={(events) => setCurrentEvents(events)}
+            events={calendar}
+            eventDrop={handleEventDrop}  // Add this line
           />
         </Box>
       </Box>
@@ -191,13 +271,16 @@ const Calendar = () => {
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
       >
-        <DialogTitle>Add New Event</DialogTitle>
+        <DialogTitle sx={{ fontFamily: 'Noto Sans Lao' }}>ເພີ່ມລາຍລະອຽດ</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
             label="ບໍລິສັດຜູ້ສະໜອງ"
             fullWidth
+            InputLabelProps={{
+              sx: { fontFamily: 'Noto Sans Lao' }
+            }}
             variant="standard"
             value={newEvent.suplyer}
             onChange={handleInputChange("suplyer")}
@@ -206,6 +289,9 @@ const Calendar = () => {
             margin="dense"
             label="ລາຍລະອຽດ"
             fullWidth
+            InputLabelProps={{
+              sx: { fontFamily: 'Noto Sans Lao' }
+            }}
             variant="standard"
             value={newEvent.description}
             onChange={handleInputChange("description")}
@@ -214,16 +300,70 @@ const Calendar = () => {
             margin="dense"
             label="ລີ້ງພີໂອ"
             fullWidth
+            InputLabelProps={{
+              sx: { fontFamily: 'Noto Sans Lao' }
+            }}
             variant="standard"
             value={newEvent.poLink}
             onChange={handleInputChange("poLink")}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAddEvent}>Add Event</Button>
+          <Button variant="contained" color="error" sx={{ fontFamily: 'Noto Sans Lao' }} onClick={handleClose}>ຍົກເລີກ</Button>
+          <Button variant="contained" color="success" sx={{ fontFamily: 'Noto Sans Lao' }} onClick={handleAddEvent}>ເພີ່ມບັນທືກ</Button>
         </DialogActions>
       </Dialog>
+      <Dialog
+        open={eventDetailOpen}
+        onClose={() => setEventDetailOpen(false)}
+        TransitionComponent={Transition}
+      >
+        <DialogTitle sx={{ fontFamily: 'Noto Sans Lao', alignSelf: 'center', fontSize: 25 }}>ລາຍລະອຽດ</DialogTitle>
+        <DialogContent sx={{ width: '80vh', display: 'flex', flexDirection: 'column' }}>
+          <Box borderBottom={'1px solid'} display={'flex'} flexDirection={'column'} p={2}>
+            <Typography fontFamily={'Noto Sans Lao'} alignSelf={'center'} fontSize={20}>ບໍລິສັດຜູ້ສະໜອງ:</Typography>
+            <Typography fontFamily={"Noto Sans Lao"} alignSelf={'center'}>
+              {selectedEvent?.title}
+            </Typography>
+          </Box>
+          <Box display={'flex'} flexDirection={'column'} borderBottom={'1px solid'} p={2}>
+            <Typography fontFamily={'Noto Sans Lao'} alignSelf={'center'} fontSize={20}>ວັນທີ</Typography>
+            <Typography fontFamily="Noto Sans Lao" alignSelf={'center'}>
+              <p>{formatDate(selectedEvent?.start, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}</p>
+            </Typography>
+          </Box>
+
+          <Box display={'flex'} flexDirection={'column'} borderBottom={'1px solid'} p={2}>
+            <Typography fontFamily={'Noto Sans Lao'} alignSelf={'center'} fontSize={20}>
+              ລາຍລະອຽດ:
+            </Typography>
+            <Typography fontFamily="Noto Sans Lao" alignSelf={'center'}>
+              {selectedEvent?.extendedProps?.description || "ບໍ່ມີ"}
+            </Typography>
+          </Box>
+
+          <Box display={'flex'} flexDirection={'column'}>
+            <Typography fontFamily={'Noto Sans Lao'} alignSelf={'center'} fontSize={20} p={2}>
+              ລິ້ງພີໂອ
+            </Typography>
+            <Typography fontFamily="Noto Sans Lao" alignSelf={'center'}>
+              <Link href={selectedEvent?.extendedProps?.poLink} target="_blank" rel="noopener">
+                {selectedEvent?.extendedProps?.poLink}
+              </Link>
+            </Typography>
+          </Box>
+
+
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" onClick={() => setEventDetailOpen(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
     </Box>
   );
 };

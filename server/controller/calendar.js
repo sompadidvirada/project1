@@ -4,7 +4,7 @@ exports.createCalendar = async (req, res) => {
   try {
     const { suplyer, polink, discription, userId, date } = req.body;
 
-    if (!suplyer || !polink || !userId || !date) {
+    if (!suplyer || !userId || !date) {
       return res.status(400).json({ message: "Missing required fields." });
     }
 
@@ -25,18 +25,78 @@ exports.createCalendar = async (req, res) => {
   }
 };
 
-exports.getCalendar = async (req,res) => {
-    const userId = req.params.id
-    try{
-         const calendar = await prisma.calendar.findMany({
-            where:{
-                userId: Number(userId)
-            }
-         })
-         res.send(calendar)
-        return
-    }catch(err){
-        console.log(err)
-        return res.status(500).json({message: `server error.`})
+exports.getCalendar = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const calendar = await prisma.calendar.findMany({
+      where: {
+        userId: Number(userId),
+      },
+    });
+
+    // Convert to FullCalendar format
+    const formattedCalendar = calendar.map((event) => ({
+      id: String(event.id),
+      title: event.suplyer,
+      start: event.date,
+      allDay: true,
+      extendedProps: {
+        description: event.discription,
+        poLink: event.polink,
+      },
+    }));
+
+    res.send(formattedCalendar);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error.` });
+  }
+};
+
+exports.updateCalendar = async (req, res) => {
+  try {
+    const calendarId = req.params.id;
+    const { suplyer, polink, discription, date } = req.body;
+
+    const updatedCalendar = await prisma.calendar.update({
+      where: {
+        id: Number(calendarId),
+      },
+      data: {
+        suplyer,
+        polink,
+        discription,
+        date: new Date(date),
+      },
+    });
+
+    return res.status(200).json(updatedCalendar);
+  } catch (err) {
+    console.error(err);
+
+    // Prisma throws a specific error if record is not found
+    if (err.code === 'P2025') {
+      return res.status(404).json({ message: "Event not found" });
     }
+
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.deleteCalendar = async (req,res) =>{
+  try{
+    const calendarId = req.params.id
+    if (!calendarId) {
+      return res.send(`calendar ID in requier!!`)
+    }
+    await prisma.calendar.delete({
+      where: {
+        id: Number(calendarId)
+      }
+    })
+    res.send(`Delete Success!`)
+  }catch(err) {
+    console.log(err)
+    return res.status(500).json({ message:`server error`})
+  }
 }
