@@ -48,6 +48,10 @@ const Tracksell = () => {
     brachId: "",
   });
   const [sellCounts, setSellCounts] = useState({});
+  
+  const filteredProducts = products.filter((product) =>
+    product.avilableproduct?.some((item) => item.aviableStatus === true)
+  );
 
   useEffect(() => {
     getProducts();
@@ -378,9 +382,15 @@ const Tracksell = () => {
         >
           {selectFormtracksell.sellAt && selectFormtracksell.brachId ? (
             <DataGrid
-              rows={products}
+              rows={products.filter((product) =>
+                product.avilableproduct?.some(
+                  (item) =>
+                    item.aviableStatus === true &&
+                    item.brachId === selectFormtracksell.brachId
+                )
+              )}
               columns={columns}
-              autoHeight // let it grow to fit content
+              autoHeight
               sx={{ width: "100%" }}
             />
           ) : (

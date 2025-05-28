@@ -5,42 +5,52 @@ exports.createProduct = async (req, res) => {
     const { name, price, sellprice, category, lifetime } = req.body;
 
     if (!name || !price || !sellprice || !category) {
-      return res.status(400).json({ message: `Can't create with emty value.` });
+      return res.status(400).json({ message: `Can't create with empty value.` });
     }
-    if (!req.file || !req.file.filename) {
-      newProduct = await prisma.product.create({
+
+    // Get all branches first
+    const allBranches = await prisma.brach.findMany();
+
+    // Start transaction
+    const result = await prisma.$transaction(async (tx) => {
+      // Create product
+      const product = await tx.product.create({
         data: {
-          name: name,
+          name,
           price: Number(price),
           sellprice: Number(sellprice),
           lifetime: Number(lifetime),
           categoryId: Number(category),
+          image: req.file?.filename || null,
         },
       });
-      return res.status(201).json({
-        message: "Product created successfully!",
-        user: newProduct,
+
+      // Prepare available products data
+      const availableProductsData = allBranches.map(branch => ({
+        productId: product.id,
+        brachId: branch.id,
+      }));
+
+      // Create available products in bulk
+      await tx.avilableproduct.createMany({
+        data: availableProductsData,
+        skipDuplicates: true,
       });
-    }
-    newProduct = await prisma.product.create({
-      data: {
-        name: name,
-        price: Number(price),
-        sellprice: Number(sellprice),
-        categoryId: Number(category),
-        lifetime: Number(lifetime),
-        image: req.file.filename,
-      },
+
+      return product;
     });
+
     res.status(201).json({
-      message: "Product created successfully!",
-      user: newProduct,
+      message: "Product created and available in all branches!",
+      product: result,
     });
+
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: `Soemthing went wrong.` });
+    console.error(err);
+    return res.status(500).json({ message: `Something went wrong.` });
   }
 };
+
 
 exports.getProduct = async (req, res) => {
   try {

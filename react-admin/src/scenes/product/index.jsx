@@ -234,7 +234,7 @@ const Product = () => {
       flex: 0.2,
     },
     {
-      field: "",
+      field: "available",
       headerName: "AVAILABLE",
       flex: 1,
       renderCell: (params) => {
@@ -272,6 +272,11 @@ const Product = () => {
             />
             <Button
               variant="contained"
+              color="success"
+              sx={{
+                height:40,
+                width:30
+              }}
               onClick={async() => {
                 const data = branchSelections[productId];
                 console.log("Submit for", productId, data);

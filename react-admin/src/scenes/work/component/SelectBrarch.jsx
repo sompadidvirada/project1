@@ -17,6 +17,7 @@ export default function SelectBrach({
   const brach = useBakeryStore((state) => state.brach);
   const getBrach = useBakeryStore((state) => state.getBrach);
   const token = useBakeryStore((state) => state.token);
+  const getProducts = useBakeryStore((state)=>state.getProducts)
 
   React.useEffect(() => {
     getBrach();
@@ -31,6 +32,7 @@ export default function SelectBrach({
       ...prevState, // Keep existing state values
       brachId: event.target.value, // Update only brachId
     }));
+    getProducts()
   };
 
   return (
