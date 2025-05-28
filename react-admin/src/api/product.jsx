@@ -1,8 +1,7 @@
 import axios from "axios";
 
-
 export const createProduct = (form, token) => {
-  return axios.post(`${process.env.REACT_APP_API_URL}/createproduct`, form , {
+  return axios.post(`${process.env.REACT_APP_API_URL}/createproduct`, form, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -10,11 +9,15 @@ export const createProduct = (form, token) => {
 };
 
 export const updateProduct = (id, form, token) => {
-  return axios.put(`${process.env.REACT_APP_API_URL}/updateproduct/` + id, form, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  return axios.put(
+    `${process.env.REACT_APP_API_URL}/updateproduct/` + id,
+    form,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
 export const getProduct = (token) => {
@@ -33,6 +36,6 @@ export const deleteProduct = (id, token) => {
   });
 };
 
-export const updateAviableProduct = (id, data) => {
-  return axios.put(`${process.env.REACT_APP_API_URL}/updateavilable/${id}`,data )
-}
+export const updateStatusProduct = (id,form) => {
+  return axios.put(`${process.env.REACT_APP_API_URL}/updateaviable/${id}`, form);
+};

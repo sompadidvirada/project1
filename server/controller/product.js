@@ -47,6 +47,7 @@ exports.getProduct = async (req, res) => {
     const Products = await prisma.product.findMany({
       include: {
         category: true,
+        avilableproduct: true,
       },
     });
     res.send(Products);
@@ -122,22 +123,96 @@ exports.deleteProduct = async (req, res) => {
 
 exports.suspendProduct = async (req, res) => {
   try {
-    const { id } = req.params
-    console.log(req.params)
+    const { id } = req.params;
+    console.log(req.params);
     const { updateStatus } = req.body;
     if (!id) {
       return res.send(`Product ID requie !!`);
     }
     const suspenProudct = await prisma.product.update({
       where: {
-        id: Number(id)
-      }, data: {
-        avilable: updateStatus
-      }
+        id: Number(id),
+      },
+      data: {
+        avilable: updateStatus,
+      },
     });
-    res.send(suspenProudct)
+    res.send(suspenProudct);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `server error` });
+  }
+};
+
+exports.insertStatusProducts = async (req, res) => {
+  try {
+    const statusData = req.body;
+
+    // Optional: Validate incoming data format
+    if (!Array.isArray(statusData) || statusData.length === 0) {
+      return res.status(400).json({ message: "Invalid input data" });
+    }
+
+    // Map to Prisma-friendly format (aviableStatus defaults to true)
+    const dataToInsert = statusData.map((item) => ({
+      productId: item.productId,
+      brachId: item.brachId,
+      aviableStatus: true,
+    }));
+
+    // Bulk insert with skipDuplicates (because of @@unique constraint)
+    await prisma.avilableproduct.createMany({
+      data: dataToInsert,
+      skipDuplicates: true,
+    });
+
+    return res
+      .status(201)
+      .json({ message: "Insert successful", count: dataToInsert.length });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+exports.updatePerBrach = async (req, res) => {
+  try {
+    const productId = req.params.id
+    const { branch, status } = req.body;
+
+    console.log(productId,branch,status)
+
+    if (!branch) {
+      // Update all branches for a product
+      const response = await prisma.avilableproduct.updateMany({
+        where: {
+          productId: Number(productId),
+        },
+        data: {
+          aviableStatus: status,
+        },
+      });
+      return res.send(
+        `Updated ${response.count} branches for product ${productId}.`
+      );
+    } else {
+      // Update a specific product-branch pair
+      await prisma.avilableproduct.update({
+        where: {
+          productId_brachId: {
+            productId: Number(productId),
+            brachId: Number(branch),
+          },
+        },
+        data: {
+          aviableStatus: status,
+        },
+      });
+      return res.send(`Updated branch ${branch} for product ${productId}.`);
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Server error` });
   }
 };

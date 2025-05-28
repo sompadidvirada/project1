@@ -23,11 +23,11 @@ import useBakeryStore from "../../zustand/storage";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../component/Header";
-import { deleteProduct, updateAviableProduct, updateProduct } from "../../api/product";
+import { deleteProduct, updateProduct, updateStatusProduct } from "../../api/product";
 import SnackbarNotification from "../../component/SneakerBar";
 import { NumericFormat } from "react-number-format";
-import DoNotTouchIcon from '@mui/icons-material/DoNotTouch';
-import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import SelectBrachProduct from "./manageproduct/SelectBrachProduct";
+import SelectStatus from "./manageproduct/SelectStatus";
 
 const Product = () => {
   const token = useBakeryStore((state) => state.token);
@@ -41,7 +41,13 @@ const Product = () => {
   const [severity, setSeverity] = useState("success"); // "success" or "error"
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-  const [aviableStatus, setAviableStatus] = useState(true)
+  const [formUpdate, setFormUpdate] = useState({});
+ 
+  const [branchSelections, setBranchSelections] = useState({});
+
+  console.log(branchSelections);
+
+  const handleStatus = () => {};
 
   // Modal state and form data
   const [open, setOpen] = useState(false);
@@ -122,11 +128,11 @@ const Product = () => {
   };
 
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "id", headerName: "ID", flex: 0.1 },
     {
       field: "image",
       headerName: "PICTURE",
-      flex: 0.5,
+      flex: 0.3,
       renderCell: (params) => {
         const imageUrl = params.row.image
           ? `${process.env.REACT_APP_API_URL}/uploads/${params.row?.image}`
@@ -154,10 +160,14 @@ const Product = () => {
       headerName: "NAME",
       type: "text",
       headerAlign: "left",
-      flex: 1,
+      flex: 0.5,
       align: "left",
       renderCell: (params) => (
-        <Typography variant="laoText" fontWeight="bold" color={colors.grey[100]}>
+        <Typography
+          variant="laoText"
+          fontWeight="bold"
+          color={colors.grey[100]}
+        >
           {params?.value}
         </Typography>
       ),
@@ -167,17 +177,26 @@ const Product = () => {
       headerName: "CATEGORY",
       type: "text",
       headerAlign: "left",
-      flex: 1,
+      flex: 0.3,
       align: "left",
       renderCell: (params) => {
-
-        return params.row.category ? <Typography variant="laoText" fontWeight="bold" color={colors.grey[100]}>{params.row.category.name}</Typography> : "No Category";
+        return params.row.category ? (
+          <Typography
+            variant="laoText"
+            fontWeight="bold"
+            color={colors.grey[100]}
+          >
+            {params.row.category.name}
+          </Typography>
+        ) : (
+          "No Category"
+        );
       },
     },
     {
       field: "price",
       headerName: "PRICE",
-      flex: 1,
+      flex: 0.3,
       renderCell: (params) => (
         <NumericFormat
           value={params.value}
@@ -192,7 +211,7 @@ const Product = () => {
     {
       field: "sellprice",
       headerName: "SELL PRICE",
-      flex: 1,
+      flex: 0.3,
       renderCell: (params) => (
         <NumericFormat
           value={params.value}
@@ -207,7 +226,73 @@ const Product = () => {
     {
       field: "lifetime",
       headerName: "LIFE TIME",
+      flex: 0.2,
+    },
+    {
+      field: "status",
+      headerName: "STATUS",
+      flex: 0.2,
+    },
+    {
+      field: "",
+      headerName: "AVAILABLE",
       flex: 1,
+      renderCell: (params) => {
+        const productId = params.row.id;
+
+        const handleBranchChange = (newBranchId) => {
+          setBranchSelections((prev) => ({
+            ...prev,
+            [productId]: {
+              ...prev[productId],
+              branch: newBranchId,
+            },
+          }));
+        };
+
+        const handleStatusChange = (newStatus) => {
+          setBranchSelections((prev) => ({
+            ...prev,
+            [productId]: {
+              ...prev[productId],
+              status: newStatus,
+            },
+          }));
+        };
+
+        return (
+          <Box display="flex" justifyContent="space-around" width="100%">
+            <SelectBrachProduct
+              value={branchSelections[productId]?.branch || ""}
+              onChange={handleBranchChange}
+            />
+            <SelectStatus
+              value={branchSelections[productId]?.status}
+              onChange={handleStatusChange}
+            />
+            <Button
+              variant="contained"
+              onClick={async() => {
+                const data = branchSelections[productId];
+                console.log("Submit for", productId, data);
+                setFormUpdate({
+                  productId: productId,
+
+                })
+                // API call here
+                try{  
+                  const updateStt = await updateStatusProduct(productId,data)
+                  console.log(updateStt)
+                }catch(err) {
+                  console.log(err)
+                }
+              }}
+            >
+              SUBMIT
+            </Button>
+          </Box>
+        );
+      },
     },
     {
       field: "manage",
@@ -235,31 +320,6 @@ const Product = () => {
                 },
               }}
             />
-            {
-              products.avilable === true ? (
-                <VpnKeyIcon 
-                onClick={()=> handleAviablefalse(params.row.id, false)}
-                sx={{
-                cursor: "pointer",
-                color: colors.greenAccent[500],
-                "&:hover": {
-                  color: colors.redAccent[100],
-                },
-              }}
-                />
-              ) : (
-                <DoNotTouchIcon
-                onClick={()=> handleAviabletrue(params.row.id, true)}
-                sx={{
-                cursor: "pointer",
-                color: colors.greenAccent[500],
-                "&:hover": {
-                  color: colors.greenAccent[100],
-                },
-              }}
-                />
-              )
-            }
           </Box>
         );
       },
@@ -298,27 +358,6 @@ const Product = () => {
     setSelectedImageUrl(null);
   };
 
-  const handleAviabletrue = async (id, aviableStatus) => {
-    try {
-      setAviableStatus(true)
-      const updateAviable = await updateAviableProduct(id,aviableStatus)
-      console.log(updateAviable)
-      getProdct()
-    } catch (err){
-      console.log(err)
-    }
-  }
-  
-  const handleAviablefalse = async (id, aviableStatus) => {
-    try {
-      setAviableStatus(false)
-      const updateAviable = await updateAviableProduct(id,aviableStatus)
-      console.log(updateAviable)
-      getProdct()
-    } catch (err){
-      console.log(err)
-    }
-  }
 
   return (
     <Box m="20px">
@@ -358,11 +397,7 @@ const Product = () => {
           },
         }}
       >
-        <DataGrid
-          rows={products || ""}
-          columns={columns}
-          slots={{ toolbar: GridToolbar }}
-        />
+        <DataGrid rows={products || ""} columns={columns} />
       </Box>
       {/* Modal Edit Product Dialog */}
       <Dialog open={open} onClose={handleClose}>

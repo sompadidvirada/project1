@@ -29,27 +29,43 @@ model User {
 }
 
 model product {
-  id         Int            @id @unique @default(autoincrement())
-  name       String
-  price      Int
-  sellprice  Int
-  avilable   Boolean        @default(true)
-  status     String         @default("A")
-  lifetime   Int            @default(7)
-  image      String?
-  tracksell  trackingsell[]
-  tracksend  trackingsend[]
-  trackexp   trackingexp[]
-  category   category       @relation(fields: [categoryId], references: [id])
-  categoryId Int
+  id              Int               @id @unique @default(autoincrement())
+  name            String
+  price           Int
+  sellprice       Int
+  status          String            @default("A")
+  lifetime        Int               @default(7)
+  image           String?
+  tracksell       trackingsell[]
+  tracksend       trackingsend[]
+  trackexp        trackingexp[]
+  category        category          @relation(fields: [categoryId], references: [id])
+  categoryId      Int
+  avilableproduct avilableproduct[]
 }
 
 model brach {
-  id        Int            @id @unique @default(autoincrement())
-  name      String
-  tracsell  trackingsell[]
-  tracksend trackingsend[]
-  trackexp  trackingexp[]
+  id              Int               @id @unique @default(autoincrement())
+  name            String
+  tracsell        trackingsell[]
+  tracksend       trackingsend[]
+  trackexp        trackingexp[]
+  avilableproduct avilableproduct[]
+}
+
+model avilableproduct {
+  id            Int       @id @unique @default(autoincrement())
+  aviableStatus Boolean   @default(true)
+  updateAt      DateTime? @updatedAt
+
+  // Relations
+  product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+
+  brach   brach @relation(fields: [brachId], references: [id], onDelete: Cascade)
+  brachId Int
+
+  @@unique([productId, brachId]) // Prevent duplicate records for the same product-branch pair
 }
 
 model trackingsell {

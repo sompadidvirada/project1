@@ -29,7 +29,6 @@ const BakeryStore = (set, get) => ({
       },
     }));
   },
-
   setData: (newData) => {
     set({ data: newData }); // <-- Add function to update data
   },
