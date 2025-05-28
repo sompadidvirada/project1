@@ -4,25 +4,31 @@ import { currentAdmin } from "../api/authen";
 import { useNavigate } from "react-router-dom";
 
 const ProtectAdmin = ({ element }) => {
-  const [ok, setOk] = useState(false);
+  const [ok, setOk] = useState(null); // null = loading, true = allowed, false = denied
   const user = useBakeryStore((state) => state.user);
   const token = useBakeryStore((state) => state.token);
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user && token) {
-      // send to back
       currentAdmin(token)
-        .then((res) => {
-          setOk(true);
-        })
-        .catch((err) => {
-          console.log(err);
-          setOk(false);
-        });
+        .then(() => setOk(true))
+        .catch(() => setOk(false));
+    } else {
+      setOk(false);
     }
-  }, []);
+  }, [user, token]);
 
-  return ok ? element : navigator("/login");
+  // Redirect if not allowed
+  useEffect(() => {
+    if (ok === false) {
+      navigate("/login");
+    }
+  }, [ok, navigate]);
+
+  if (ok === null) return null; // or show a loading spinner
+
+  return element;
 };
+
 export default ProtectAdmin;

@@ -4,7 +4,7 @@ import { currentUser } from "../api/authen";
 import { useNavigate } from "react-router-dom";
 
 const ProtectUser = ({ element }) => {
-  const [ok, setOk] = useState(false);
+  const [ok, setOk] = useState(null);
   const user = useBakeryStore((state) => state.user);
   const token = useBakeryStore((state) => state.token);
   const navigator = useNavigate()
@@ -17,9 +17,21 @@ const ProtectUser = ({ element }) => {
           console.log(err);
           setOk(false);
         });
+    }else {
+      setOk(false);
     }
-  }, []);
+  }, [user, token]);
 
-  return ok ? element : navigator('/login');
+   // Redirect if not allowed
+  useEffect(() => {
+    if (ok === false) {
+      navigator("/login");
+    }
+  }, [ok, navigator]);
+
+  if (ok === null) return null;
+
+  return element;
 };
+
 export default ProtectUser;

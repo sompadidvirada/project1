@@ -22,6 +22,7 @@ model User {
   role        String         @default("user")
   status      Boolean        @default(true)
   birstDate   DateTime
+  calendar    calendar[]
   image       String?
   tracksell   trackingsell[]
   tracksend   trackingsend[]
@@ -51,6 +52,16 @@ model brach {
   tracksend       trackingsend[]
   trackexp        trackingexp[]
   avilableproduct avilableproduct[]
+}
+
+model calendar {
+  id          Int      @id @unique @default(autoincrement())
+  suplyer     String
+  discription String
+  polink      String
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  date        DateTime
 }
 
 model avilableproduct {
