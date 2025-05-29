@@ -246,19 +246,19 @@ const SidebarUser = () => {
               Manage Products
             </Typography>
             <SubMenu
-              title="Products"
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຈັດການລາຍການສິນຄ້າ</Typography>}
               icon={<BakeryDiningIcon />}
               style={{ color: colors.grey[100] }}
             >
               <Item
-                title="Add Product"
+                title={<Typography fontFamily={'Noto Sans Lao'}>ເພີ່ມລາຍການສິນຄ້າ</Typography>}
                 to="/user/addproduct"
                 icon={<AddCircleOutlineIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
-                title="Manage Product"
+                title={<Typography fontFamily={'Noto Sans Lao'}>ແກ້ໄຂລາຍການສິນຄ້າ</Typography>}
                 to="/user/manageproduct"
                 icon={<ListIcon />}
                 selected={selected}
@@ -266,7 +266,7 @@ const SidebarUser = () => {
               />
             </SubMenu>
             <Item
-              title="Manage brach-Category"
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຈັດການໝວດໝູ່ ແລະ ສາຂາ</Typography>}
               to="/user/managecatebrach"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
@@ -282,26 +282,26 @@ const SidebarUser = () => {
             </Typography>
 
             <SubMenu
-              title="Data"
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຄີຍອດການເຄື່ອນໄຫວສິນຄ້າ</Typography>}
               icon={<WorkIcon />}
               style={{ color: colors.grey[100] }}
             >
               <Item
-                title="Tracking Sell"
+                title={<Typography fontFamily={'Noto Sans Lao'}>ຄີຍອດຂາຍ</Typography>}
                 to="/user"
                 icon={<AttachMoneyIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
-                title="Tracking Send"
+                title={<Typography fontFamily={'Noto Sans Lao'}>ຄີຍອດຈັດສົ່ງ</Typography>}
                 to="/user/tracksend"
                 icon={<DeliveryDiningIcon />}
                 selected={selected}
                 setSelected={setSelected}
               />
               <Item
-                title="Tracking EXP"
+                title={<Typography fontFamily={'Noto Sans Lao'}>ຄີຍອດໝົດອາຍຸ</Typography>}
                 to="/user/trackexp"
                 icon={<AutoDeleteIcon />}
                 selected={selected}
@@ -310,7 +310,7 @@ const SidebarUser = () => {
             </SubMenu>
 
             <Item
-              title="Calendar"
+              title={<Typography fontFamily={'Noto Sans Lao'}>ບັນທືກແຜນສັ່ງຊື້</Typography>}
               to="/user/calendar"
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}

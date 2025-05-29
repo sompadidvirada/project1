@@ -262,7 +262,7 @@ const Sidebar = () => {
               Manage User
             </Typography>
             <Item
-              title="Create User"
+              title={<Typography fontFamily={'Noto Sans Lao'}>ສ້າງຢູເຊີພະນັກງານ</Typography>}
               to="/admin/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
@@ -348,7 +348,7 @@ const Sidebar = () => {
 
             <Item
               title="Calendar"
-              to="/admin/calendar"
+              to="/admin/calendaradmin"
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

@@ -23,6 +23,7 @@ import LayoutUser from "../scenes/layout/LayoutUser";
 import Pie from "../scenes/pie/Pie";
 import DataTrack from "../scenes/data_track/DataTrack";
 import TotalDataTrack from "../scenes/totalDataTrack/TotalDataTrack";
+import CalendarForAdmin from "../scenes/calendar/CalendarForAdmin";
 
 const router = createBrowserRouter([
   {
@@ -50,7 +51,7 @@ const router = createBrowserRouter([
       { path: "tracksell", element: <Tracksell /> },
       { path: "tracksend", element: <Tracksend /> },
       { path: "trackexp", element: <Trackexp /> },
-      { path: "calendar", element: <Calendar /> },
+      { path: "calendaradmin", element: <CalendarForAdmin /> },
       { path: "faq", element: <FAQ /> },
       { path: "bar", element: <Bar /> },
       { path: "pie", element: <Pie /> },
@@ -58,7 +59,6 @@ const router = createBrowserRouter([
       { path: "geography", element: <GeographyChart /> },
       { path: "datatrack", element: <DataTrack /> },
       { path: "totaldatatrack", element: <TotalDataTrack /> }
-
     ],
   },
   {

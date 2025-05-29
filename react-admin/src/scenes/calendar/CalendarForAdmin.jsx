@@ -1,3 +1,4 @@
+import React from "react";
 import { forwardRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import { formatDate } from "@fullcalendar/core";
@@ -39,7 +40,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Calendar = () => {
+const CalendarForAdmin = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -435,4 +436,5 @@ const Calendar = () => {
     </Box>
   );
 };
-export default Calendar;
+
+export default CalendarForAdmin;
