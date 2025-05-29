@@ -46,7 +46,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
       onClick={() => setSelected(title)}
       icon={icon}
     >
-      <Typography>{title}</Typography>
+      {title}
       <Link to={to} />
     </MenuItem>
   );
@@ -191,7 +191,7 @@ const Sidebar = () => {
                 alignItems="center"
                 ml="15px"
               >
-                <Typography variant="h3" color={colors.grey[100]}>
+                <Typography component="span" variant="h3" color={colors.grey[100]}>
                   TREEKOFF
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>

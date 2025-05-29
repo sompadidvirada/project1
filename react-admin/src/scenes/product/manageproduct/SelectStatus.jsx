@@ -1,36 +1,37 @@
 import { FormControl, MenuItem, Select, Typography } from "@mui/material";
 import React from "react";
 
-const SelectStatus = ({ value, onChange }) => {
-  const handleOnselect = (event) => {
-    onChange(event.target.value === "true");
+const SelectStatus = ({ setFormUpdateAviable }) => {
+  const handleChange = (event) => {
+    const value = event.target.value === "true"; // convert to boolean
+
+    setFormUpdateAviable((prev) => ({
+      ...prev,
+      status: value,
+    }));
   };
 
   return (
     <FormControl sx={{ minWidth: 160, textAlign: "center", height: 48 }}>
       <Select
         labelId="status-select-label"
-        value={typeof value === "boolean" ? String(value) : ""}
-        onChange={handleOnselect}
         displayEmpty
+        defaultValue=""
+        onChange={handleChange}
         sx={{
-          height: 40, // ← sets height of the Select input
-          fontSize: "0.9rem", // optional: adjust font size
+          height: 40,
+          fontSize: "0.9rem",
           "& .MuiSelect-select": {
             paddingTop: 1,
             paddingBottom: 1,
           },
         }}
       >
-        <MenuItem value="">
+        <MenuItem value="" disabled>
           <Typography>Select Status</Typography>
         </MenuItem>
-        <MenuItem value="true">
-          <Typography>AVAILABLE</Typography>
-        </MenuItem>
-        <MenuItem value="false">
-          <Typography>UNAVAILABLE</Typography>
-        </MenuItem>
+        <MenuItem value="true">AVAILABLE</MenuItem>
+        <MenuItem value="false">UNAVAILABLE</MenuItem>
       </Select>
     </FormControl>
   );

@@ -35,6 +35,26 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
+const renderEventContent = (eventInfo) => {
+  return (
+    <Box
+      sx={{
+        fontFamily: "Noto Sans Lao",
+        fontSize: "0.9rem",
+        color: "#fff",
+        backgroundColor: "#4caf50",
+        borderRadius: "4px",
+        padding: "2px 4px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {eventInfo.event.title}
+    </Box>
+  );
+};
+
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -257,6 +277,7 @@ const Calendar = () => {
             editable={true}
             selectable={true}
             selectMirror={true}
+            eventContent={renderEventContent}
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}

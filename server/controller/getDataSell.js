@@ -377,6 +377,8 @@ exports.dataTrack = async (req, res) => {
           totalSell,
           totalSend,
           totalExp,
+          totalPriceSend: product.price * totalSend,
+          totalPriceSell: product.sellprice * totalSell,
           totalPriceExp: product.price * totalExp,
           totalPriceSend: product.price * totalSend,
         };

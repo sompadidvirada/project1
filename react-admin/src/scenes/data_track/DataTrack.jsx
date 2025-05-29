@@ -26,17 +26,19 @@ const DataTrack = () => {
 
   // Preload unique images once
   useEffect(() => {
-    if (!dataTrack || dataTrack.length === 0) return;  // Prevent processing if dataTrack is empty or undefined
-  
+    if (!dataTrack || dataTrack.length === 0) return; // Prevent processing if dataTrack is empty or undefined
+
     const imageUrls = dataTrack
       .flatMap((branch) => branch.detail || []) // Fallback to empty array if `detail` is undefined
       .map((item) =>
-        item.image ? `${process.env.REACT_APP_API_URL}/uploads/${item.image}` : null
+        item.image
+          ? `${process.env.REACT_APP_API_URL}/uploads/${item.image}`
+          : null
       )
       .filter(Boolean);
-  
+
     const uniqueUrls = [...new Set(imageUrls)];
-  
+
     uniqueUrls.forEach((url) => {
       const img = new Image();
       img.src = url;
@@ -62,6 +64,10 @@ const DataTrack = () => {
         (sum, item) => sum + item.totalPriceSend,
         0
       );
+      const totalSell = branch.detail.reduce(
+        (sum, item) => sum + item.totalPriceSell,
+        0
+      );
       const branchPercent =
         totalSend > 0 ? ((totalExp / totalSend) * 100).toFixed(2) : "0.00";
 
@@ -69,6 +75,8 @@ const DataTrack = () => {
         ...branch,
         rowsWithPercent,
         totalExp,
+        totalSend,
+        totalSell,
         branchPercent,
       };
     });
@@ -129,10 +137,79 @@ const DataTrack = () => {
         flex: 0.5,
       },
       {
-        field: "totalPriceExp",
-        headerName: "TOTAL PRICE EXP",
+        field: "totalPriceSend",
+        headerName: "TOTAL SEND",
+        headerAlign: "center",
         type: "number",
         flex: 0.5,
+        renderCell: (params) => {
+          let color = colors.blueAccent[400];
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Typography color={color}>
+                {params?.value.toLocaleString()}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        field: "totalPriceSell",
+        headerName: "TOTAL SELL",
+        headerAlign: "center",
+        type: "number",
+        flex: 0.5,
+        renderCell: (params) => {
+          let color = colors.greenAccent[400];
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Typography color={color}>
+                {params?.value.toLocaleString()}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        field: "totalPriceExp",
+        headerName: "TOTAL EXP",
+        headerAlign: "center",
+        type: "number",
+        flex: 0.5,
+        renderCell: (params) => {
+          let color = colors.redAccent[400];
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <Typography color={color}>
+                {params?.value.toLocaleString()}
+              </Typography>
+            </Box>
+          );
+        },
       },
       {
         field: "percent",
@@ -228,12 +305,16 @@ const DataTrack = () => {
                   alignItems="center"
                   py={5}
                 >
-                  <CircularProgress style={{ color: 'white'}}/>
+                  <CircularProgress style={{ color: "white" }} />
                 </Box>
               }
             >
               {processedData.map((branch) => (
-                <LazyBranchDataGrid key={branch.id} branch={branch} columns={columns} />
+                <LazyBranchDataGrid
+                  key={branch.id}
+                  branch={branch}
+                  columns={columns}
+                />
               ))}
             </Suspense>
           </Box>

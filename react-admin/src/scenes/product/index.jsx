@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   Typography,
+  Avatar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -23,7 +24,11 @@ import useBakeryStore from "../../zustand/storage";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../component/Header";
-import { deleteProduct, updateProduct, updateStatusProduct } from "../../api/product";
+import {
+  deleteProduct,
+  updateProduct,
+  updateStatusProduct,
+} from "../../api/product";
 import SnackbarNotification from "../../component/SneakerBar";
 import { NumericFormat } from "react-number-format";
 import SelectBrachProduct from "./manageproduct/SelectBrachProduct";
@@ -42,12 +47,17 @@ const Product = () => {
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
   const [formUpdate, setFormUpdate] = useState({});
- 
-  const [branchSelections, setBranchSelections] = useState({});
+  const user = useBakeryStore((state) => state.user);
+  const isAdmin = user?.role === "admin";
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const brach = useBakeryStore((state) => state.brach);
+  const [formUpdateAviable, setFormUpdateAviable] = useState({});
 
-  console.log(branchSelections);
-
-  const handleStatus = () => {};
+  // inside your component
+  useEffect(() => {
+    console.log("selectedProduct.image changed:", selectedProduct?.image);
+  }, [selectedProduct]);
 
   // Modal state and form data
   const [open, setOpen] = useState(false);
@@ -102,6 +112,32 @@ const Product = () => {
     }
   };
 
+  const productsWithBranchNames = products.map((product) => ({
+    ...product,
+    avilableproduct: product.avilableproduct.map((item) => {
+      const branch = brach.find((b) => b.id === item.brachId);
+      return {
+        ...item,
+        brachName: branch ? branch.name : null,
+      };
+    }),
+  }));
+
+  const hadleUpdateAviable = async (row) => {
+    setFormUpdateAviable((prev) => ({
+      ...prev,
+      brachId: row.brachId,
+    }));
+
+    try {
+      await updateStatusProduct(row.productId, formUpdateAviable);
+      console.log(`success`);
+      getProdct();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleSubmitEdit = async () => {
     // Create a FormData object to send the data and image together
     const formData = new FormData();
@@ -116,7 +152,6 @@ const Product = () => {
     }
 
     const update = await updateProduct(editProduct.id, formData, token);
-    console.log(update);
     // Send the formData with the updated product information
     // Example: await updateProductApi(formData);
     // Log the FormData
@@ -127,6 +162,17 @@ const Product = () => {
     setOpen(false);
   };
 
+  // Open dialog with selected row
+  const handleOpenDetailDialog = (product) => {
+    setSelectedProduct(product);
+    setOpenDetailDialog(true);
+  };
+
+  // Close dialog
+  const handleCloseDetailDialog = () => {
+    setOpenDetailDialog(false);
+    setSelectedProduct(null);
+  };
   const columns = [
     { field: "id", headerName: "ID", flex: 0.1 },
     {
@@ -167,6 +213,12 @@ const Product = () => {
           variant="laoText"
           fontWeight="bold"
           color={colors.grey[100]}
+          sx={{
+            cursor: "pointer",
+            textDecoration: "underline",
+            "&:hover": { color: colors.greenAccent[400] },
+          }}
+          onClick={() => handleOpenDetailDialog(params.row)}
         >
           {params?.value}
         </Typography>
@@ -233,102 +285,38 @@ const Product = () => {
       headerName: "STATUS",
       flex: 0.2,
     },
-    {
-      field: "available",
-      headerName: "AVAILABLE",
-      flex: 1,
-      renderCell: (params) => {
-        const productId = params.row.id;
-
-        const handleBranchChange = (newBranchId) => {
-          setBranchSelections((prev) => ({
-            ...prev,
-            [productId]: {
-              ...prev[productId],
-              branch: newBranchId,
-            },
-          }));
-        };
-
-        const handleStatusChange = (newStatus) => {
-          setBranchSelections((prev) => ({
-            ...prev,
-            [productId]: {
-              ...prev[productId],
-              status: newStatus,
-            },
-          }));
-        };
-
-        return (
-          <Box display="flex" justifyContent="space-around" width="100%">
-            <SelectBrachProduct
-              value={branchSelections[productId]?.branch || ""}
-              onChange={handleBranchChange}
-            />
-            <SelectStatus
-              value={branchSelections[productId]?.status}
-              onChange={handleStatusChange}
-            />
-            <Button
-              variant="contained"
-              color="success"
-              sx={{
-                height:40,
-                width:30
-              }}
-              onClick={async() => {
-                const data = branchSelections[productId];
-                console.log("Submit for", productId, data);
-                setFormUpdate({
-                  productId: productId,
-
-                })
-                // API call here
-                try{  
-                  const updateStt = await updateStatusProduct(productId,data)
-                  console.log(updateStt)
-                }catch(err) {
-                  console.log(err)
-                }
-              }}
-            >
-              SUBMIT
-            </Button>
-          </Box>
-        );
-      },
-    },
-    {
-      field: "manage",
-      headerName: "MANAGE",
-      renderCell: (params) => {
-        return (
-          <Box display="flex" justifyContent="space-around" width="100%">
-            <EditIcon
-              onClick={() => handleOpen(params.row)}
-              sx={{
-                cursor: "pointer",
-                color: colors.blueAccent[500],
-                "&:hover": {
-                  color: colors.blueAccent[700],
-                },
-              }}
-            />
-            <DeleteIcon
-              onClick={() => handleDelete(params.row.id)}
-              sx={{
-                cursor: "pointer",
-                color: colors.redAccent[500],
-                "&:hover": {
-                  color: colors.redAccent[700],
-                },
-              }}
-            />
-          </Box>
-        );
-      },
-    },
+    ...(isAdmin
+      ? [
+          {
+            field: "manage",
+            headerName: "MANAGE",
+            renderCell: (params) => (
+              <Box display="flex" justifyContent="space-around" width="100%">
+                <EditIcon
+                  onClick={() => handleOpen(params.row)}
+                  sx={{
+                    cursor: "pointer",
+                    color: colors.blueAccent[500],
+                    "&:hover": {
+                      color: colors.blueAccent[700],
+                    },
+                  }}
+                />
+                <DeleteIcon
+                  onClick={() => handleDelete(params.row.id)}
+                  sx={{
+                    cursor: "pointer",
+                    color: colors.redAccent[500],
+                    "&:hover": {
+                      color: colors.redAccent[700],
+                    },
+                  }}
+                />
+              </Box>
+            ),
+          },
+        ]
+      : []),
   ];
 
   useEffect(() => {
@@ -340,7 +328,6 @@ const Product = () => {
 
     try {
       const deletePro = await deleteProduct(id, token);
-      console.log(deletePro);
       setSnackbarMessage(deletePro.data || "Delete product success.");
       setSeverity("success");
       setOpenSnackbar(true);
@@ -362,7 +349,6 @@ const Product = () => {
     setOpenImageModal(false);
     setSelectedImageUrl(null);
   };
-
 
   return (
     <Box m="20px">
@@ -402,7 +388,7 @@ const Product = () => {
           },
         }}
       >
-        <DataGrid rows={products || ""} columns={columns} />
+        <DataGrid rows={productsWithBranchNames || ""} columns={columns} />
       </Box>
       {/* Modal Edit Product Dialog */}
       <Dialog open={open} onClose={handleClose}>
@@ -573,6 +559,122 @@ const Product = () => {
         severity={severity}
         onClose={() => setOpenSnackbar(false)}
       />
+      <Dialog
+        open={openDetailDialog}
+        onClose={handleCloseDetailDialog}
+        PaperProps={{
+          sx: {
+            width: "80vw",
+            height: "80vh",
+            maxWidth: "none", // Prevent default maxWidth constraints
+          },
+        }}
+      >
+        <DialogTitle>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifySelf={"center"}
+            gap={5}
+          >
+            <img
+              style={{ width: "60px", borderRadius: "5px" }}
+              src={`${process.env.REACT_APP_API_URL}/uploads/${selectedProduct?.image}`}
+            />
+            <Typography variant="h2">{selectedProduct?.name}</Typography>
+          </Box>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDetailDialog}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[100],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+
+        <DialogContent dividers>
+          <Box sx={{ height: "100%", width: "100%" }}>
+            <DataGrid
+              rows={selectedProduct?.avilableproduct ?? []}
+              columns={[
+                { field: "id", headerName: "ID", flex: 0.2 },
+                {
+                  field: "brachName",
+                  headerName: "Branch Name",
+                  flex: 1,
+                  renderCell: (params) => (
+                    <Typography sx={{ fontFamily: "Noto Sans Lao" }}>
+                      {params.value}
+                    </Typography>
+                  ),
+                },
+                {
+                  field: "aviableStatus",
+                  headerName: "Available",
+                  flex: 0.5,
+                  renderCell: (params) =>
+                    params.value ? (
+                      <Typography color="green">Available</Typography>
+                    ) : (
+                      <Typography color="red">Unavailable</Typography>
+                    ),
+                },
+                {
+                  field: "updateAt",
+                  headerName: "Last Updated",
+                  flex: 1,
+                  renderCell: (params) => {
+                    const date = new Date(params.value);
+                    return isNaN(date)
+                      ? "Invalid date"
+                      : date.toLocaleString("en-GB", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        });
+                  },
+                },
+                {
+                  field: "manage",
+                  headerName: "MANAGE",
+                  flex: 1,
+                  renderCell: (params) => {
+                    return (
+                      <Box display={"flex"} justifyContent={"center"} gap={2}>
+                        <SelectStatus
+                          setFormUpdateAviable={setFormUpdateAviable}
+                        />
+                        <Button
+                          onClick={() => hadleUpdateAviable(params.row)}
+                          variant="contained"
+                        >
+                          SUBMIT
+                        </Button>
+                      </Box>
+                    );
+                  },
+                },
+              ]}
+              getRowId={(row) => row.id}
+              pageSize={5}
+              rowsPerPageOptions={[5]}
+              hideFooter
+              disableSelectionOnClick
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDetailDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

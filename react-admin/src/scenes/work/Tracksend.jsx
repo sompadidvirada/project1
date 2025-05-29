@@ -370,7 +370,13 @@ const Tracksend = () => {
         >
           {selectFormtracksell.sendAt && selectFormtracksell.brachId ? (
             <DataGrid
-              rows={products}
+              rows={products.filter((product) =>
+                product.avilableproduct?.some(
+                  (item) =>
+                    item.aviableStatus === true &&
+                    item.brachId === selectFormtracksell.brachId
+                )
+              )}
               columns={columns}
               autoHeight // let it grow to fit content
               sx={{ width: "100%" }}

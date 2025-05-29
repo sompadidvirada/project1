@@ -37,6 +37,27 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
+const renderEventContent = (eventInfo) => {
+  return (
+    <Box
+      sx={{
+        fontFamily: "Noto Sans Lao",
+        fontSize: "0.9rem",
+        color: "#fff",
+        backgroundColor: "#4caf50",
+        borderRadius: "4px",
+        padding: "2px 4px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {eventInfo.event.title}
+    </Box>
+  );
+};
+
+
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -137,7 +158,6 @@ const CalendarForAdmin = () => {
         // 👉 Refresh the calendar state from backend
     getCalen()
 
-        console.log(`Event ${eventId} deleted successfully.`);
       } catch (error) {
         console.error("Failed to delete event:", error);
         alert("ລົບເຫດການບໍ່ສຳເລັດ");
@@ -161,11 +181,8 @@ const CalendarForAdmin = () => {
       date: new Date(event.start),
     };
 
-    // Assuming your event has a unique id stored in `event.id`
-    console.log(updatedData);
     const updateCalen = await updateCalendar(event.id, updatedData);
 
-    console.log(`Update success,${updateCalen}`);
 
     // Refresh events
 getCalen()
@@ -267,6 +284,7 @@ getCalen()
             editable={true}
             selectable={true}
             selectMirror={true}
+            eventContent={renderEventContent}
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}
@@ -425,6 +443,7 @@ getCalen()
             </Typography>
             <Typography fontFamily="Noto Sans Lao" alignSelf={"center"}>
               <Link
+              sx={{color:colors.greenAccent[100]}}
                 href={selectedEvent?.extendedProps?.poLink}
                 target="_blank"
                 rel="noopener"
@@ -434,7 +453,7 @@ getCalen()
             </Typography>
           </Box>
         </DialogContent>
-        <DialogActions>
+        <DialogActions  sx={{alignSelf:'center'}}>
           <Button variant="contained" onClick={() => setEventDetailOpen(false)}>
             Close
           </Button>

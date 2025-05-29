@@ -10,19 +10,11 @@ import {
   useTheme,
 } from "@mui/material";
 
-const SelectBrachProduct = ({ value, onChange }) => {
+const SelectBrachProduct = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const brach = useBakeryStore((state) => state.brach);
   const getBrach = useBakeryStore((state) => state.getBrach);
-
-  useEffect(() => {
-    getBrach();
-  }, []);
-
-  const handleChange = (event) => {
-    onChange(event.target.value);
-  };
 
   return (
     <FormControl
@@ -43,8 +35,6 @@ const SelectBrachProduct = ({ value, onChange }) => {
       </InputLabel>
       <Select
         labelId="brach-label"
-        value={value || ""}
-        onChange={handleChange}
         sx={{
           height: 40, // ← sets height of the Select input
           fontSize: "0.9rem", // optional: adjust font size
@@ -59,37 +49,12 @@ const SelectBrachProduct = ({ value, onChange }) => {
             NONE
           </Typography>
         </MenuItem>
-        {Array.isArray(brach) && brach.length > 0 ? (
-          brach.map((item) => (
-            <MenuItem
-              key={item.id}
-              value={item.id}
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: colors.greenAccent[700],
-                  color: colors.grey[100], // optional: to override text color
-                },
-                "&.Mui-selected:hover": {
-                  backgroundColor: colors.greenAccent[600],
-                },
-              }}
-            >
-              <Typography
-                variant="laoText"
-                fontWeight="bold"
-                color={colors.grey[100]}
-              >
-                {item.name}
-              </Typography>
-            </MenuItem>
-          ))
-        ) : (
           <MenuItem disabled value="">
             <Typography variant="h5" color="error">
               No branches available
             </Typography>
           </MenuItem>
-        )}
+
       </Select>
     </FormControl>
   );
