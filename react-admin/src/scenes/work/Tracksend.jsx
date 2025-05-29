@@ -29,7 +29,7 @@ const Tracksend = () => {
   const user = useBakeryStore((state) => state.user);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const products = useBakeryStore((state) => state.products);
+  const products = useBakeryStore((state) => state.products) || [];
   const getProducts = useBakeryStore((state) => state.getProducts);
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);

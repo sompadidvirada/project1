@@ -28,6 +28,7 @@ import useBakeryStore from "../../zustand/storage";
 import {
   createCalendar,
   deleteCalendar,
+  getCalendarAdmin,
   updateCalendar,
 } from "../../api/calendar";
 import { useEffect } from "react";
@@ -35,6 +36,7 @@ import dayjs from "dayjs";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -47,9 +49,8 @@ const CalendarForAdmin = () => {
   const [open, setOpen] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventContext, setNewEventContext] = useState("");
-  const calendar = useBakeryStore((state) => state.calendar) || "";
-  const getCalendar = useBakeryStore((state) => state.getCalendar);
   const user = useBakeryStore((state) => state.user);
+  const [calendarad, setCalendarad] = useState([]) || ""
   const [newEvent, setNewEvent] = useState({
     suplyer: "",
     description: "",
@@ -60,8 +61,16 @@ const CalendarForAdmin = () => {
   const [startDate, setStartDate] = useState(dayjs().startOf("month"));
   const [endDate, setEndDate] = useState(dayjs().endOf("month"));
 
-  useEffect(() => {
-    getCalendar(user.id);
+  const getCalen = async () => {
+    try{
+      const ress = await getCalendarAdmin()
+      setCalendarad(ress.data)
+    }catch(err){
+      console.log()
+    }
+  }
+  useEffect( () => {
+  getCalen()
   }, []);
   const [selectedDateInfo, setSelectedDateInfo] = useState(null); // for storing the calendar selection
 
@@ -105,7 +114,7 @@ const CalendarForAdmin = () => {
 
       const respone = await createCalendar(formData);
 
-      getCalendar(user.id);
+      getCalen()
 
       setOpen(false);
       setSelectedDateInfo(null);
@@ -126,7 +135,7 @@ const CalendarForAdmin = () => {
         selected.event.remove();
 
         // 👉 Refresh the calendar state from backend
-        getCalendar(user.id);
+    getCalen()
 
         console.log(`Event ${eventId} deleted successfully.`);
       } catch (error) {
@@ -159,7 +168,7 @@ const CalendarForAdmin = () => {
     console.log(`Update success,${updateCalen}`);
 
     // Refresh events
-    getCalendar(user.id);
+getCalen()
   };
 
   return (
@@ -193,8 +202,8 @@ const CalendarForAdmin = () => {
         >
           <Typography fontFamily={"Noto Sans Lao"}>ລາຍລະອຽດ</Typography>
           <List>
-            {calendar
-              ? calendar
+            {calendarad
+              ? calendarad
                   .filter((event) => {
                     const eventDate = dayjs(event.start).startOf("day");
                     return (
@@ -262,7 +271,7 @@ const CalendarForAdmin = () => {
             select={handleDateClick}
             eventClick={handleEventClick}
             eventsSet={(events) => setCurrentEvents(events)}
-            events={calendar}
+            events={calendarad}
             eventDrop={handleEventDrop} // Add this line
           />
         </Box>
@@ -379,13 +388,11 @@ const CalendarForAdmin = () => {
               ວັນທີ
             </Typography>
             <Typography fontFamily="Noto Sans Lao" alignSelf={"center"}>
-              <p>
                 {formatDate(selectedEvent?.start, {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
                 })}
-              </p>
             </Typography>
           </Box>
 

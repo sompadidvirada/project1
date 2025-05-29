@@ -10,9 +10,9 @@ exports.createCalendar = async (req, res) => {
 
     const newCalendarEntry = await prisma.calendar.create({
       data: {
-        suplyer : suplyer,
-        polink : polink,
-        discription : discription,
+        suplyer: suplyer,
+        polink: polink,
+        discription: discription,
         userId: parseInt(userId), // Make sure this is an integer
         date: new Date(date), // Convert to JS Date object
       },
@@ -75,7 +75,7 @@ exports.updateCalendar = async (req, res) => {
     console.error(err);
 
     // Prisma throws a specific error if record is not found
-    if (err.code === 'P2025') {
+    if (err.code === "P2025") {
       return res.status(404).json({ message: "Event not found" });
     }
 
@@ -83,20 +83,42 @@ exports.updateCalendar = async (req, res) => {
   }
 };
 
-exports.deleteCalendar = async (req,res) =>{
-  try{
-    const calendarId = req.params.id
+exports.deleteCalendar = async (req, res) => {
+  try {
+    const calendarId = req.params.id;
     if (!calendarId) {
-      return res.send(`calendar ID in requier!!`)
+      return res.send(`calendar ID in requier!!`);
     }
     await prisma.calendar.delete({
       where: {
-        id: Number(calendarId)
-      }
-    })
-    res.send(`Delete Success!`)
-  }catch(err) {
-    console.log(err)
-    return res.status(500).json({ message:`server error`})
+        id: Number(calendarId),
+      },
+    });
+    res.send(`Delete Success!`);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
   }
-}
+};
+
+exports.getCalendarAdmin = async (req, res) => {
+  try {
+    const getAllCalendar = await prisma.calendar.findMany()
+        // Convert to FullCalendar format
+    const formattedCalendar = getAllCalendar.map((event) => ({
+      id: String(event.id),
+      title: event.suplyer,
+      start: event.date,
+      allDay: true,
+      extendedProps: {
+        description: event.discription,
+        poLink: event.polink,
+      },
+    }));
+
+    res.send(formattedCalendar);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};

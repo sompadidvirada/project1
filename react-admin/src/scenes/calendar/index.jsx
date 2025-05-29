@@ -46,7 +46,7 @@ const Calendar = () => {
   const [open, setOpen] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventContext, setNewEventContext] = useState("");
-  const calendar = useBakeryStore((state) => state.calendar) || "";
+  const calendar = useBakeryStore((state) => state.calendar) || [];
   const getCalendar = useBakeryStore((state) => state.getCalendar);
   const user = useBakeryStore((state) => state.user);
   const [newEvent, setNewEvent] = useState({
@@ -234,7 +234,7 @@ const Calendar = () => {
                       </Box>
                     </ListItem>
                   ))
-              : ""}
+              : []}
           </List>
         </Box>
         {/**CALENDAR */}

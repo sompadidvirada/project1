@@ -15,7 +15,7 @@ const BakeryStore = (set, get) => ({
   dataPie: null,
   dataTrack: null,
   totalData: null,
-  calendar: null,
+  calendar: [],
   queryForm: {
     startDate: "", // New state for queryForm
     endDate: "",
