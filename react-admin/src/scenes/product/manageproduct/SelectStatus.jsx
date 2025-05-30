@@ -1,14 +1,20 @@
 import { FormControl, MenuItem, Select, Typography } from "@mui/material";
 import React from "react";
 
-const SelectStatus = ({ setFormUpdateAviable }) => {
-  const handleChange = (event) => {
-    const value = event.target.value === "true"; // convert to boolean
+const SelectStatus = ({ setFormUpdateAviable, row, formUpdateAviable }) => {
+  const [localStatus, setLocalStatus] = React.useState(String(row.aviableStatus));
 
-    setFormUpdateAviable((prev) => ({
-      ...prev,
+  const handleChange = (event) => {
+    const value = event.target.value === "true";
+
+    setLocalStatus(event.target.value); // update local state immediately
+
+    setFormUpdateAviable({
+      brachId: row.brachId,
       status: value,
-    }));
+    });
+
+    console.log(formUpdateAviable)
   };
 
   return (
@@ -16,7 +22,11 @@ const SelectStatus = ({ setFormUpdateAviable }) => {
       <Select
         labelId="status-select-label"
         displayEmpty
-        defaultValue=""
+        value={
+          formUpdateAviable?.brachId === row.brachId
+            ? String(formUpdateAviable?.status)
+            : ""
+        }
         onChange={handleChange}
         sx={{
           height: 40,

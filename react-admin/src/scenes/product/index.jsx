@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -16,23 +16,21 @@ import {
   Typography,
   Avatar,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useTheme } from "@mui/material";
 import useBakeryStore from "../../zustand/storage";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CloseIcon from "@mui/icons-material/Close";
 import Header from "../../component/Header";
 import {
   deleteProduct,
   updateProduct,
-  updateStatusProduct,
 } from "../../api/product";
 import SnackbarNotification from "../../component/SneakerBar";
 import { NumericFormat } from "react-number-format";
-import SelectBrachProduct from "./manageproduct/SelectBrachProduct";
-import SelectStatus from "./manageproduct/SelectStatus";
+import DisplayStatusDialog from "./component/DisplayStatusDialog";
 
 const Product = () => {
   const token = useBakeryStore((state) => state.token);
@@ -46,18 +44,11 @@ const Product = () => {
   const [severity, setSeverity] = useState("success"); // "success" or "error"
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-  const [formUpdate, setFormUpdate] = useState({});
   const user = useBakeryStore((state) => state.user);
   const isAdmin = user?.role === "admin";
-  const [openDetailDialog, setOpenDetailDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const brach = useBakeryStore((state) => state.brach);
-  const [formUpdateAviable, setFormUpdateAviable] = useState({});
-
-  // inside your component
-  useEffect(() => {
-    console.log("selectedProduct.image changed:", selectedProduct?.image);
-  }, [selectedProduct]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [openDetailDialog, setOpenDetailDialog] = useState(false);
 
   // Modal state and form data
   const [open, setOpen] = useState(false);
@@ -70,6 +61,7 @@ const Product = () => {
     lifetime: "",
     image: "",
   });
+
   const [selectedImage, setSelectedImage] = useState(null); // To store the selected image
   const [imagePreview, setImagePreview] = useState(null); // To store image preview URL
 
@@ -87,6 +79,11 @@ const Product = () => {
     }
 
     setOpen(true);
+  };
+
+  const handleOpenDetailDialog = (product) => {
+    setSelectedProduct(product);
+    setOpenDetailDialog(true);
   };
 
   const handleClose = () => {
@@ -123,21 +120,6 @@ const Product = () => {
     }),
   }));
 
-  const hadleUpdateAviable = async (row) => {
-    setFormUpdateAviable((prev) => ({
-      ...prev,
-      brachId: row.brachId,
-    }));
-
-    try {
-      await updateStatusProduct(row.productId, formUpdateAviable);
-      console.log(`success`);
-      getProdct();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const handleSubmitEdit = async () => {
     // Create a FormData object to send the data and image together
     const formData = new FormData();
@@ -162,17 +144,6 @@ const Product = () => {
     setOpen(false);
   };
 
-  // Open dialog with selected row
-  const handleOpenDetailDialog = (product) => {
-    setSelectedProduct(product);
-    setOpenDetailDialog(true);
-  };
-
-  // Close dialog
-  const handleCloseDetailDialog = () => {
-    setOpenDetailDialog(false);
-    setSelectedProduct(null);
-  };
   const columns = [
     { field: "id", headerName: "ID", flex: 0.1 },
     {
@@ -559,122 +530,12 @@ const Product = () => {
         severity={severity}
         onClose={() => setOpenSnackbar(false)}
       />
-      <Dialog
-        open={openDetailDialog}
-        onClose={handleCloseDetailDialog}
-        PaperProps={{
-          sx: {
-            width: "80vw",
-            height: "80vh",
-            maxWidth: "none", // Prevent default maxWidth constraints
-          },
-        }}
-      >
-        <DialogTitle>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifySelf={"center"}
-            gap={5}
-          >
-            <img
-              style={{ width: "60px", borderRadius: "5px" }}
-              src={`${process.env.REACT_APP_API_URL}/uploads/${selectedProduct?.image}`}
-            />
-            <Typography variant="h2">{selectedProduct?.name}</Typography>
-          </Box>
-          <IconButton
-            aria-label="close"
-            onClick={handleCloseDetailDialog}
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 8,
-              color: (theme) => theme.palette.grey[100],
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-
-        <DialogContent dividers>
-          <Box sx={{ height: "100%", width: "100%" }}>
-            <DataGrid
-              rows={selectedProduct?.avilableproduct ?? []}
-              columns={[
-                { field: "id", headerName: "ID", flex: 0.2 },
-                {
-                  field: "brachName",
-                  headerName: "Branch Name",
-                  flex: 1,
-                  renderCell: (params) => (
-                    <Typography sx={{ fontFamily: "Noto Sans Lao" }}>
-                      {params.value}
-                    </Typography>
-                  ),
-                },
-                {
-                  field: "aviableStatus",
-                  headerName: "Available",
-                  flex: 0.5,
-                  renderCell: (params) =>
-                    params.value ? (
-                      <Typography color="green">Available</Typography>
-                    ) : (
-                      <Typography color="red">Unavailable</Typography>
-                    ),
-                },
-                {
-                  field: "updateAt",
-                  headerName: "Last Updated",
-                  flex: 1,
-                  renderCell: (params) => {
-                    const date = new Date(params.value);
-                    return isNaN(date)
-                      ? "Invalid date"
-                      : date.toLocaleString("en-GB", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        });
-                  },
-                },
-                {
-                  field: "manage",
-                  headerName: "MANAGE",
-                  flex: 1,
-                  renderCell: (params) => {
-                    return (
-                      <Box display={"flex"} justifyContent={"center"} gap={2}>
-                        <SelectStatus
-                          setFormUpdateAviable={setFormUpdateAviable}
-                        />
-                        <Button
-                          onClick={() => hadleUpdateAviable(params.row)}
-                          variant="contained"
-                        >
-                          SUBMIT
-                        </Button>
-                      </Box>
-                    );
-                  },
-                },
-              ]}
-              getRowId={(row) => row.id}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              hideFooter
-              disableSelectionOnClick
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDetailDialog}>Close</Button>
-        </DialogActions>
-      </Dialog>
+      <DisplayStatusDialog
+        openDetailDialog={openDetailDialog}
+        setOpenDetailDialog={setOpenDetailDialog}
+        selectedProduct={selectedProduct}
+        setSelectedProduct={setSelectedProduct}
+      />
     </Box>
   );
 };

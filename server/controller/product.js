@@ -189,11 +189,11 @@ exports.insertStatusProducts = async (req, res) => {
 exports.updatePerBrach = async (req, res) => {
   try {
     const productId = req.params.id
-    const { branch, status } = req.body;
+    const { brachId, status } = req.body;
 
-    console.log(productId,branch,status)
+    console.log(productId,brachId,status)
 
-    if (!branch) {
+    if (!brachId) {
       // Update all branches for a product
       const response = await prisma.avilableproduct.updateMany({
         where: {
@@ -208,18 +208,18 @@ exports.updatePerBrach = async (req, res) => {
       );
     } else {
       // Update a specific product-branch pair
-      await prisma.avilableproduct.update({
+      const updates = await prisma.avilableproduct.update({
         where: {
           productId_brachId: {
             productId: Number(productId),
-            brachId: Number(branch),
+            brachId: Number(brachId),
           },
         },
         data: {
           aviableStatus: status,
         },
       });
-      return res.send(`Updated branch ${branch} for product ${productId}.`);
+      return res.send(updates);
     }
   } catch (err) {
     console.log(err);

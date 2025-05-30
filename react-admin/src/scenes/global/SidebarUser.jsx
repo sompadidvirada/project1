@@ -10,9 +10,11 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import useBakeryStore from "../../zustand/storage";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import BarChartIcon from '@mui/icons-material/BarChart';
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ListIcon from "@mui/icons-material/List";
 import BakeryDiningIcon from "@mui/icons-material/BakeryDining";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {
   TextField,
   Button,
@@ -313,6 +315,20 @@ const SidebarUser = () => {
               title={<Typography fontFamily={'Noto Sans Lao'}>ບັນທືກແຜນສັ່ງຊື້</Typography>}
               to="/user/calendar"
               icon={<CalendarTodayOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຕິດຕາມພາບລວມ</Typography>}
+              to="/user/dashborad"
+              icon={<CheckCircleIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຕິດຕາມພາບຍ່ອຍສາຂາ</Typography>}
+              to="/user/datatrack"
+              icon={<BarChartIcon />}
               selected={selected}
               setSelected={setSelected}
             />

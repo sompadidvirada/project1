@@ -72,6 +72,8 @@ const router = createBrowserRouter([
       { path: "addproduct", element: <AddProduct /> },
       { path: "managecatebrach", element: <Invoice /> },
       { path: "calendar", element: <Calendar /> },
+      { path: "dashborad", element: <Dashboard /> },
+      { path: "datatrack", element: <DataTrack /> },
     ]
   }
 ]);
