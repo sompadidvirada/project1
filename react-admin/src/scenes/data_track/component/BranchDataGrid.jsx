@@ -17,7 +17,11 @@ const BranchDataGrid = ({ branch, columns }) => {
     const tableHeaders = printableColumns
       .map((col) => `<th>${col.headerName}</th>`)
       .join("");
-    const tableRows = branch.rowsWithPercent
+    const sortedRows = [...branch.rowsWithPercent].sort(
+      (a, b) => b.totalSend - a.totalSend
+    );
+
+    const tableRows = sortedRows
       .map((row) => {
         return `<tr>${printableColumns
           .map((col) => `<td>${formatCell(row[col.field])}</td>`)
@@ -28,7 +32,7 @@ const BranchDataGrid = ({ branch, columns }) => {
     const html = `
       <html>
         <head>
-          <title>${branch.name} Report</title>
+          <title>${branch.name}</title>
            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
             <style>
                body {
@@ -50,11 +54,11 @@ const BranchDataGrid = ({ branch, columns }) => {
         </head>
 
         <body>
-          <h2>${branch.name} Summary</h2>
-          <p>Send: ${branch.totalSend.toLocaleString()} ກີບ</p>
-          <p>Sell: ${branch.totalSell.toLocaleString()} ກີບ</p>
-          <p>Exp: ${branch.totalExp.toLocaleString()} ກີບ</p>
-          <p>Expired %: ${branch.branchPercent}%</p>
+          <h2>${branch.name}</h2>
+          <p>ສົ່ງ: ${branch.totalSend.toLocaleString()} ກີບ</p>
+          <p>ຂາຍ: ${branch.totalSell.toLocaleString()} ກີບ</p>
+          <p>ໝົດອາຍຸ: ${branch.totalExp.toLocaleString()} ກີບ</p>
+          <p>ເປີເຊັນໝົດອາຍຸ %: ${branch.branchPercent}%</p>
           <table>
             <thead><tr>${tableHeaders}</tr></thead>
             <tbody>${tableRows}</tbody>

@@ -3,6 +3,7 @@ import { tokens } from "../../theme";
 import useBakeryStore from "../../zustand/storage";
 import {
   Box,
+  Button,
   Dialog,
   DialogContent,
   IconButton,
@@ -57,7 +58,6 @@ const TotalDataTrack = () => {
       }) || []
     );
   }, [totalData]);
-
 
   const columns = useMemo(
     () => [
@@ -287,6 +287,94 @@ const TotalDataTrack = () => {
     setSelectedImageUrl(null);
   };
 
+  const handlePrint = () => {
+    const formatCell = (value) => {
+      if (typeof value === "number") return value.toLocaleString();
+      return value ?? "";
+    };
+
+    const printableColumns = columns.filter((col) => col.field !== "image");
+
+    const printWindow = window.open("", "_blank");
+    const tableHeaders = printableColumns
+      .map((col) => `<th>${col.headerName}</th>`)
+      .join("");
+
+    const sortedRows = [...rowsWithPercent].sort(
+      (a, b) => b.totalSend - a.totalSend
+    );
+
+    const tableRows = sortedRows
+      .map((row) => {
+        return `<tr>${printableColumns
+          .map((col) => `<td>${formatCell(row[col.field])}</td>`)
+          .join("")}</tr>`;
+      })
+      .join("");
+
+    // Aggregate totals
+    // Aggregate total prices
+    const totalPriceSend = totalData.reduce(
+      (sum, b) => sum + b.totalPriceSend,
+      0
+    );
+    const totalPriceSell = totalData.reduce(
+      (sum, b) => sum + b.totalPriceSell,
+      0
+    );
+    const totalPriceEXP = totalData.reduce(
+      (sum, b) => sum + b.totalPriceEXP,
+      0
+    );
+    const branchPercent =
+      totalPriceSend > 0
+        ? ((totalPriceEXP / totalPriceSend) * 100).toFixed(1)
+        : 0;
+
+    const html = `
+    <html>
+      <head>
+        <title>Branch Tracking Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
+        <style>
+          body {
+            font-family: 'Noto Sans Lao', Arial, sans-serif;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+          }
+          h2 {
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <h2>ລາຍງານສະຫຼຸບຂໍ້ມູນທັງໝົດ</h2>
+        <p>ລາຄາສົ່ງລວມ: ${totalPriceSend.toLocaleString()} ກີບ</p>
+<p>ລາຄາຂາຍລວມ: ${totalPriceSell.toLocaleString()} ກີບ</p>
+<p>ລາຄາໝົດອາຍຸລວມ: ${totalPriceEXP.toLocaleString()} ກີບ</p>
+<p>ເປີເຊັນໝົດອາຍຸ %: ${branchPercent}%</p>
+
+        <table>
+          <thead><tr>${tableHeaders}</tr></thead>
+          <tbody>${tableRows}</tbody>
+        </table>
+        <script>window.onload = () => { window.print(); }</script>
+      </body>
+    </html>
+  `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   return (
     <Box m="20px" textAlign="center">
       <Header title="TRACKING EVERY BRANCH SALE AND EXPIRE" />
@@ -305,11 +393,14 @@ const TotalDataTrack = () => {
             gap="20px"
           >
             <Calendar />
+            <Button variant="contained" color="success" onClick={handlePrint}>
+              Print
+            </Button>
           </Box>
         </Box>
         <Box
           sx={{
-            height:'100vh',
+            height: "100vh",
             "& .MuiDataGrid-root": { border: "none" },
             "& .MuiDataGrid-cell": { borderBottom: "none" },
             "& .name-column--cell": { color: colors.greenAccent[300] },
