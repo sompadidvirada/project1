@@ -90,6 +90,8 @@ model trackingsell {
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
+
+  @@unique([productId, brachId, sellAt])
 }
 
 model trackingsend {
@@ -103,6 +105,8 @@ model trackingsend {
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
+
+  @@unique([productId, brachId, sendAt])
 }
 
 model trackingexp {
@@ -116,6 +120,8 @@ model trackingexp {
   productId Int
   brach     brach    @relation(fields: [brachId], references: [id])
   brachId   Int
+
+  @@unique([productId, brachId, expAt])
 }
 
 model category {

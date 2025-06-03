@@ -58,6 +58,7 @@ const TotalDataTrack = () => {
     );
   }, [totalData]);
 
+
   const columns = useMemo(
     () => [
       { field: "id", headerName: "ID", flex: 0.2 },

@@ -1,30 +1,92 @@
-// src/pages/tracking/BranchDataGrid.js
-
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import Header from "../../../component/Header";
 
 const BranchDataGrid = ({ branch, columns }) => {
+  const handlePrint = () => {
+    const formatCell = (value) => {
+      if (typeof value === "number") return value.toLocaleString();
+      return value ?? "";
+    };
+
+    // Exclude the 'image' column from print
+    const printableColumns = columns.filter((col) => col.field !== "image");
+
+    const printWindow = window.open("", "_blank");
+    const tableHeaders = printableColumns
+      .map((col) => `<th>${col.headerName}</th>`)
+      .join("");
+    const tableRows = branch.rowsWithPercent
+      .map((row) => {
+        return `<tr>${printableColumns
+          .map((col) => `<td>${formatCell(row[col.field])}</td>`)
+          .join("")}</tr>`;
+      })
+      .join("");
+
+    const html = `
+      <html>
+        <head>
+          <title>${branch.name} Report</title>
+           <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao&display=swap" rel="stylesheet">
+            <style>
+               body {
+             font-family: 'Noto Sans Lao', Arial, sans-serif;
+                   }
+                            table {
+                width: 100%;
+                border-collapse: collapse;
+              }
+              th, td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: left;
+              }
+              h2 {
+                text-align: center;
+              }
+            </style>
+        </head>
+
+        <body>
+          <h2>${branch.name} Summary</h2>
+          <p>Send: ${branch.totalSend.toLocaleString()} ກີບ</p>
+          <p>Sell: ${branch.totalSell.toLocaleString()} ກີບ</p>
+          <p>Exp: ${branch.totalExp.toLocaleString()} ກີບ</p>
+          <p>Expired %: ${branch.branchPercent}%</p>
+          <table>
+            <thead><tr>${tableHeaders}</tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+          <script>window.onload = () => { window.print(); }</script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.open();
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   return (
     <Box sx={{ mb: "30px" }}>
       <Header
         title={
-          <Box display={"flex"} gap={3} justifySelf={'center'}>
+          <Box display={"flex"} gap={3} justifySelf={"center"}>
             <Typography variant="laoText" sx={{ fontSize: 30 }}>
-              {`${branch?.name} (Expired %: ${branch?.branchPercent || ""})`}{" "}
+              {`${branch?.name} (Expired %: ${branch?.branchPercent || ""})`}
             </Typography>
             <Typography
               variant="laoText"
               sx={{ fontSize: 30, color: "rgb(83, 129, 255)" }}
             >
               SEND {branch?.totalSend.toLocaleString() || ""} ກີບ
-            </Typography>{" "}
+            </Typography>
             <Typography
               variant="laoText"
               sx={{ fontSize: 30, color: "rgb(0, 255, 136)" }}
             >
-              {" "}
               SELL {branch?.totalSell.toLocaleString() || ""} ກີບ
             </Typography>
             <Typography
@@ -33,6 +95,9 @@ const BranchDataGrid = ({ branch, columns }) => {
             >
               EXP {branch?.totalExp?.toLocaleString() || ""} ກີບ
             </Typography>
+            <Button variant="contained" color="success" onClick={handlePrint}>
+              Print
+            </Button>
           </Box>
         }
       />
@@ -44,6 +109,7 @@ const BranchDataGrid = ({ branch, columns }) => {
         disableSelectionOnClick
         pagination
         pageSize={10}
+        hideFooter
       />
     </Box>
   );

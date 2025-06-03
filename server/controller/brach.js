@@ -13,6 +13,23 @@ exports.createBrach = async (req, res) => {
         name: brachName,
       },
     });
+
+    const getProduct = await prisma.product.findMany();
+
+    //PREPARE DATA FOR INSERT
+    const dataToInsert = getProduct.map((item) => ({
+      productId: item.id,
+      brachId: ress.id,
+      aviableStatus: true,
+    }));
+
+    // CREATE AVIABLE STATUS FOR THE BRANCH
+
+    await prisma.avilableproduct.createMany({
+      data: dataToInsert,
+      skipDuplicates: true,
+    });
+
     res.send(`Create ${ress.name} Sucess.`);
   } catch (err) {
     console.log(err);

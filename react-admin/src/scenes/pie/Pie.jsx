@@ -3,27 +3,35 @@ import Header from "../../component/Header";
 import PieChart from "../../component/PieChart";
 import Calendar from "../bar/Calendar";
 import useBakeryStore from "../../zustand/storage";
-import { useState } from "react";
-import { testBCEL } from "../../api/testBCEL";
+import { useEffect, useState } from "react";
+import { testBCEL, checkPayment } from "../../api/testBCEL";
 import { QRCodeCanvas } from "qrcode.react";
+import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Pie = () => {
   const [formtoreq, setFormtoreq] = useState({
     amount: "",
     description: "",
   });
+  const secretKey =
+    "$2a$10$LhIoUy7iI6YWn/qWT23gE.Zcl3c6xYu6AhU2uCR2tCb06E318CjKe";
 
-  const [qrData, setQrData] = useState(null); 
+  const [qrData, setQrData] = useState(null);
+  const [transition, setTransition] = useState(null);
+  const navigate = useNavigate();
+
+  {
+    /**https://payment-gateway.lailaolab.com/v1/api/link/payment-status/{transactionId}*/
+  }
 
   const handleForm = async () => {
     try {
       const payload = {
-        amount: Number(formtoreq.amount), 
+        amount: Number(formtoreq.amount),
         description: formtoreq.description,
-        secretKey:
-          "$2a$10$LhIoUy7iI6YWn/qWT23gE.Zcl3c6xYu6AhU2uCR2tCb06E318CjKe", 
+        secretKey: secretKey,
       };
-      console.log("Sending amount:", typeof payload.amount, payload.amount);
 
       const response = await testBCEL(payload);
       console.log("QR Response:", response.data);
@@ -39,6 +47,23 @@ const Pie = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleCheckPayment = async () => {
+    try {
+      if (!qrData.transactionId) {
+        return toast.error("ບໍ່ມີລາຍການກວດສອບ");
+      }
+      const check = await checkPayment(qrData.transactionId, secretKey);
+      console.log(check);
+      if (check?.data?.data?.status === "PAYMENT_COMPLETED") {
+        navigate("/admin/success");
+      } else {
+        return toast.error("ກະລຸນຸຊຳລະກ່ອນ");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const dataPie = useBakeryStore((state) => state.dataPie);
@@ -79,7 +104,21 @@ const Pie = () => {
             <p>Transaction ID: {qrData.transactionId}</p>
           </Box>
         )}
+        {qrData && (
+          <Box mt={2}>
+            <h3>Check Payment</h3>
+            <Button
+              onClick={handleCheckPayment}
+              variant="contained"
+              color="success"
+              sx={{ fontFamily: "Noto Sans Lao" }}
+            >
+              ກວດສອບ
+            </Button>
+          </Box>
+        )}
       </Box>
+      <ToastContainer />
     </Box>
   );
 };

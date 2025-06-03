@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Dialog,
   DialogContent,
   IconButton,
@@ -21,8 +22,18 @@ const DataTrack = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const dataTrack = useBakeryStore((state) => state.dataTrack);
+  const filteredBranches = dataTrack.map((branch) => {
+    return {
+      ...branch,
+      detail: branch.detail.filter(
+        (product) => product.availableProductCount !== 0
+      ),
+    };
+  });
+
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
+  const [filterData, setFilterData] = useState(false);
 
   // Preload unique images once
   useEffect(() => {
@@ -47,7 +58,8 @@ const DataTrack = () => {
 
   // Preprocess data using useMemo
   const processedData = useMemo(() => {
-    return dataTrack.map((branch) => {
+    const FinalData = filterData ? filteredBranches : dataTrack;
+    return FinalData.map((branch) => {
       const rowsWithPercent = branch.detail.map((item) => ({
         ...item,
         percent:
@@ -80,7 +92,10 @@ const DataTrack = () => {
         branchPercent,
       };
     });
-  }, [dataTrack]);
+  }, [dataTrack, filterData]);
+
+  console.log(processedData);
+  console.log(filteredBranches)
 
   const columns = useMemo(
     () => [
@@ -243,6 +258,11 @@ const DataTrack = () => {
     setSelectedImageUrl(null);
   };
 
+  const handleFilter = () => {
+    setFilterData((prev) => !prev);
+  };
+
+  console.log(filterData);
   return (
     <Box m="20px" textAlign="center">
       <Header title="TRACKING EVERY BRANCH SALE AND EXPIRE" />
@@ -261,6 +281,9 @@ const DataTrack = () => {
             gap="20px"
           >
             <Calendar />
+            <Button variant="contained" onClick={handleFilter}>
+              FILTER DATA
+            </Button>
           </Box>
         </Box>
 
@@ -311,7 +334,7 @@ const DataTrack = () => {
             >
               {processedData.map((branch) => (
                 <LazyBranchDataGrid
-                  key={branch.id}
+                  key={`${branch.id}-${filterData}`} // 👈 key changes when filterData changes
                   branch={branch}
                   columns={columns}
                 />

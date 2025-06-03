@@ -305,8 +305,14 @@ exports.dataTrack = async (req, res) => {
     const end = new Date(endDate);
     end.setHours(23, 59, 59, 999);
 
-    const fecthProducts = await prisma.product.findMany();
+    // Fetch all products with their available products (for all branches)
+    const fecthProducts = await prisma.product.findMany({
+      include: {
+        avilableproduct: true,
+      },
+    });
 
+    // Fetch all branches with tracking info within the date range
     const fecthBrach = await prisma.brach.findMany({
       include: {
         tracsell: {
@@ -336,37 +342,25 @@ exports.dataTrack = async (req, res) => {
       },
     });
 
-    const result = fecthBrach.map((branch) => {
+    // Generate result per branch
+    const result = fecthBrach.map((brach) => {
       const detail = fecthProducts.map((product) => {
-        // Filter and sum tracsell
-        const totalSell = branch.tracsell
-          .filter(
-            (s) =>
-              s.productId === product.id &&
-              new Date(s.sellAt) >= start &&
-              new Date(s.sellAt) <= end
-          )
+        const totalSell = brach.tracsell
+          .filter((s) => s.productId === product.id)
           .reduce((sum, s) => sum + s.sellCount, 0);
 
-        // Filter and sum tracksend
-        const totalSend = branch.tracksend
-          .filter(
-            (s) =>
-              s.productId === product.id &&
-              new Date(s.sendAt) >= start &&
-              new Date(s.sendAt) <= end
-          )
+        const totalSend = brach.tracksend
+          .filter((s) => s.productId === product.id)
           .reduce((sum, s) => sum + s.sendCount, 0);
 
-        // Filter and sum trackexp
-        const totalExp = branch.trackexp
-          .filter(
-            (s) =>
-              s.productId === product.id &&
-              new Date(s.expAt) >= start &&
-              new Date(s.expAt) <= end
-          )
+        const totalExp = brach.trackexp
+          .filter((s) => s.productId === product.id)
           .reduce((sum, s) => sum + s.expCount, 0);
+
+        // Find avilableproduct specific to this product and this branch
+        const availableProduct = product.avilableproduct.find(
+          (ap) => ap.brachId === brach.id
+        );
 
         return {
           id: product.id,
@@ -380,20 +374,20 @@ exports.dataTrack = async (req, res) => {
           totalPriceSend: product.price * totalSend,
           totalPriceSell: product.sellprice * totalSell,
           totalPriceExp: product.price * totalExp,
-          totalPriceSend: product.price * totalSend,
+          availableProductCount: availableProduct?.aviableStatus ? availableProduct.count : 0, // Optional chaining in case it's undefined
         };
       });
 
       return {
-        id: branch.id,
-        name: branch.name,
+        id: brach.id,
+        name: brach.name,
         detail,
       };
     });
 
     res.send(result);
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ message: `Something went wrong 500.` });
   }
 };

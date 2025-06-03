@@ -17,3 +17,11 @@ export const testBCEL = async ({ amount, description, secretKey }) => {
 
   return axios.post(url, data, config);
 };
+
+export const checkPayment = async (tranId, secretkey) => {
+  return axios.get(`https://payment-gateway.lailaolab.com/v1/api/link/payment-status/${tranId}`, {
+    headers: {
+      secretKey: secretkey
+    }
+  })
+}

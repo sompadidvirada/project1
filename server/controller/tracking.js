@@ -10,8 +10,8 @@ exports.tracksell = async (req, res) => {
     }
 
     // Date part .......
-
-    const formattedsellAt = parseISO(sellAt);
+    const rawDate = parseISO(sellAt);
+    const formattedsellAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
     const sellDay = format(formattedsellAt, "EEEE");
 
     // check part ......
@@ -62,7 +62,9 @@ exports.tracksend = async (req, res) => {
 
     // Date part .......
 
-    const formattedsendAt = parseISO(sendAt);
+    const rawDate = parseISO(sendAt);
+    const formattedsendAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
+
     const sendDay = format(formattedsendAt, "EEEE");
 
     // check part ......
@@ -108,14 +110,14 @@ exports.trackexp = async (req, res) => {
   try {
     const { expCount, expAt, userId, productId, brachId } = req.body;
 
-
     if (!expCount || !expAt || !brachId || !userId || !productId) {
       return res.status(400).json({ message: "something went wrong." });
     }
 
     // Date part .......
 
-    const formattedexpAt = parseISO(expAt);
+    const rawDate = parseISO(expAt);
+    const formattedexpAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
     const expDay = format(formattedexpAt, "EEEE");
 
     // check part ......
@@ -282,6 +284,7 @@ exports.updateTrackSell = async (req, res) => {
 exports.updateTrackSend = async (req, res) => {
   try {
     const { sendAt, productId, brachId, sendCount } = req.body;
+    console.log(sendAt, productId, brachId, sendCount);
 
     // Set range for the whole day
     const startOfDay = new Date(sendAt);
@@ -429,3 +432,4 @@ exports.deleteTrackEXP = async (req, res) => {
     return res.status(500).json({ message: `Something went wrong 500.` });
   }
 };
+
