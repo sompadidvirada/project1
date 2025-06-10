@@ -332,6 +332,13 @@ const SidebarUser = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item
+              title={<Typography fontFamily={'Noto Sans Lao'}>ຕິດຕາມທັງໝົດ</Typography>}
+              to="/user/totaldatatrack"
+              icon={<BarChartIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Box>
         </Menu>
       </ProSidebar>

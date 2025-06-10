@@ -278,6 +278,8 @@ const Tracksell = () => {
     if (selectDateBrachCheck.brachId && selectDateBrachCheck.sellDate) {
       try {
         const res = await checkTrackSell(selectDateBrachCheck, token);
+
+        console.log(res)
         setChecked(res.data);
       } catch (error) {
         console.error("Error fetching branch check:", error);

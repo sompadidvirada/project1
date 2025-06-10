@@ -12,7 +12,9 @@ export default function Calendar({ setSelectFormtracksell,setSelectDateBrachChec
     setValue(newValue);
 
     if (newValue) {
-      const formattedDate = dayjs(newValue).hour(8).minute(0).second(0).format("YYYY-MM-DDTHH:mm:ss");
+      const formattedDate = dayjs(newValue).startOf("day").toISOString();
+
+      console.log("Sending sellAt:", formattedDate);
       setSelectFormtracksell((prevState) => ({
         ...prevState,
         sellAt: formattedDate,

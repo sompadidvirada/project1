@@ -11,7 +11,7 @@ export default function CalendarSend({ selectFormtracksell, setSelectFormtrackse
     setValue(newValue);
 
     if (newValue) {
-      const formattedDate = dayjs(newValue).hour(8).minute(0).second(0).format("YYYY-MM-DDTHH:mm:ss");
+      const formattedDate = dayjs(newValue).startOf("day").toISOString();
       setSelectFormtracksell((prevState) => ({
         ...prevState,
         sendAt: formattedDate,

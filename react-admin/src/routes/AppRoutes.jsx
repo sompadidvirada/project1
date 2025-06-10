@@ -76,6 +76,7 @@ const router = createBrowserRouter([
       { path: "calendar", element: <Calendar /> },
       { path: "dashborad", element: <Dashboard /> },
       { path: "datatrack", element: <DataTrack /> },
+      { path: "totaldatatrack", element: <TotalDataTrack /> },
     ]
   }
 ]);

@@ -10,27 +10,26 @@ exports.tracksell = async (req, res) => {
     }
 
     // Date part .......
-    const rawDate = parseISO(sellAt);
-    const formattedsellAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
+    const formattedsellAt = parseISO(sellAt); // already in UTC
     const sellDay = format(formattedsellAt, "EEEE");
 
-    // check part ......
+    const start = new Date(formattedsellAt);
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(formattedsellAt);
+    end.setUTCHours(23, 59, 59, 999);
 
     const check = await prisma.trackingsell.findFirst({
       where: {
-        AND: [
-          {
-            sellAt: formattedsellAt,
-          },
-          {
-            brachId: Number(brachId),
-          },
-          {
-            productId: Number(productId),
-          },
-        ],
+        sellAt: {
+          gte: start,
+          lte: end,
+        },
+        brachId: Number(brachId),
+        productId: Number(productId),
       },
     });
+
     if (check) {
       return res.status(400).json({ message: `This item's already updated.` });
     }
@@ -62,26 +61,23 @@ exports.tracksend = async (req, res) => {
 
     // Date part .......
 
-    const rawDate = parseISO(sendAt);
-    const formattedsendAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
-
+    const formattedsendAt = parseISO(sendAt); // already in UTC
     const sendDay = format(formattedsendAt, "EEEE");
 
-    // check part ......
+    const start = new Date(formattedsendAt);
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(formattedsendAt);
+    end.setUTCHours(23, 59, 59, 999);
 
     const check = await prisma.trackingsend.findFirst({
       where: {
-        AND: [
-          {
-            sendAt: formattedsendAt,
-          },
-          {
-            brachId: Number(brachId),
-          },
-          {
-            productId: Number(productId),
-          },
-        ],
+        sendAt: {
+          gte: start,
+          lte: end,
+        },
+        brachId: Number(brachId),
+        productId: Number(productId),
       },
     });
     if (check) {
@@ -116,25 +112,23 @@ exports.trackexp = async (req, res) => {
 
     // Date part .......
 
-    const rawDate = parseISO(expAt);
-    const formattedexpAt = new Date(rawDate.setHours(0, 0, 0, 0)); // Round to midnight
+    const formattedexpAt = parseISO(expAt); // already in UTC
     const expDay = format(formattedexpAt, "EEEE");
 
-    // check part ......
+    const start = new Date(formattedexpAt);
+    start.setUTCHours(0, 0, 0, 0);
+
+    const end = new Date(formattedexpAt);
+    end.setUTCHours(23, 59, 59, 999);
 
     const check = await prisma.trackingexp.findFirst({
       where: {
-        AND: [
-          {
-            expAt: formattedexpAt,
-          },
-          {
-            brachId: Number(brachId),
-          },
-          {
-            productId: Number(productId),
-          },
-        ],
+        expAt: {
+          gte: start,
+          lte: end,
+        },
+        brachId: Number(brachId),
+        productId: Number(productId),
       },
     });
     if (check) {
@@ -170,9 +164,8 @@ exports.checkTrackSell = async (req, res) => {
     }
 
     const startofDay = new Date(sellDate);
-    startofDay.setUTCHours(0, 0, 0, 0);
-
     const endofDay = new Date(sellDate);
+    startofDay.setUTCHours(0, 0, 0, 0);
     endofDay.setUTCHours(23, 59, 59, 999);
 
     const checkDate = await prisma.trackingsell.findMany({
@@ -432,4 +425,3 @@ exports.deleteTrackEXP = async (req, res) => {
     return res.status(500).json({ message: `Something went wrong 500.` });
   }
 };
-
