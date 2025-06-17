@@ -33,7 +33,7 @@ const DataTrack = () => {
 
   const [openImageModal, setOpenImageModal] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState(null);
-  const [filterData, setFilterData] = useState(false);
+  const [filterData, setFilterData] = useState(true);
 
   // Preload unique images once
   useEffect(() => {
@@ -94,8 +94,6 @@ const DataTrack = () => {
     });
   }, [dataTrack, filterData]);
 
-  console.log(processedData);
-  console.log(filteredBranches)
 
   const columns = useMemo(
     () => [
@@ -262,7 +260,6 @@ const DataTrack = () => {
     setFilterData((prev) => !prev);
   };
 
-  console.log(filterData);
   return (
     <Box m="20px" textAlign="center">
       <Header title="TRACKING EVERY BRANCH SALE AND EXPIRE" />

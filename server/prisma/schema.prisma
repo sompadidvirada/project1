@@ -62,6 +62,7 @@ model calendar {
   User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      Int
   date        DateTime
+  isSuccess   Boolean  @default(false)
 }
 
 model avilableproduct {
@@ -95,7 +96,7 @@ model trackingsell {
 }
 
 model trackingsend {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @unique @default(autoincrement())
   sendCount Int
   sendAt    DateTime
   sendDay   String
@@ -110,7 +111,7 @@ model trackingsend {
 }
 
 model trackingexp {
-  id        Int      @id @default(autoincrement())
+  id        Int      @id @unique @default(autoincrement())
   expCount  Int
   expAt     DateTime
   expDay    String

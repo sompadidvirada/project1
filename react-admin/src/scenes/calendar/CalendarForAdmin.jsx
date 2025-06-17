@@ -6,14 +6,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import { Box, List, ListItem, Typography, useTheme } from "@mui/material";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
 import Button from "@mui/material/Button";
@@ -57,8 +50,6 @@ const renderEventContent = (eventInfo) => {
   );
 };
 
-
-
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -71,7 +62,7 @@ const CalendarForAdmin = () => {
   const [newEventTitle, setNewEventTitle] = useState("");
   const [newEventContext, setNewEventContext] = useState("");
   const user = useBakeryStore((state) => state.user);
-  const [calendarad, setCalendarad] = useState([]) || ""
+  const [calendarad, setCalendarad] = useState([]) || "";
   const [newEvent, setNewEvent] = useState({
     suplyer: "",
     description: "",
@@ -82,23 +73,23 @@ const CalendarForAdmin = () => {
   const [startDate, setStartDate] = useState(dayjs().startOf("month"));
   const [endDate, setEndDate] = useState(dayjs().endOf("month"));
 
+  const start = startDate.startOf("day");
+  const end = endDate.startOf("day");
+
   const getCalen = async () => {
-    try{
-      const ress = await getCalendarAdmin()
-      setCalendarad(ress.data)
-    }catch(err){
-      console.log()
+    try {
+      const ress = await getCalendarAdmin();
+      setCalendarad(ress.data);
+    } catch (err) {
+      console.log();
     }
-  }
-  useEffect( () => {
-  getCalen()
+  };
+  useEffect(() => {
+    getCalen();
   }, []);
   const [selectedDateInfo, setSelectedDateInfo] = useState(null); // for storing the calendar selection
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+  console.log(calendarad);
   const handleClose = () => {
     setOpen(false);
   };
@@ -135,7 +126,7 @@ const CalendarForAdmin = () => {
 
       const respone = await createCalendar(formData);
 
-      getCalen()
+      getCalen();
 
       setOpen(false);
       setSelectedDateInfo(null);
@@ -156,8 +147,7 @@ const CalendarForAdmin = () => {
         selected.event.remove();
 
         // 👉 Refresh the calendar state from backend
-    getCalen()
-
+        getCalen();
       } catch (error) {
         console.error("Failed to delete event:", error);
         alert("ລົບເຫດການບໍ່ສຳເລັດ");
@@ -183,9 +173,8 @@ const CalendarForAdmin = () => {
 
     const updateCalen = await updateCalendar(event.id, updatedData);
 
-
     // Refresh events
-getCalen()
+    getCalen();
   };
 
   return (
@@ -220,48 +209,50 @@ getCalen()
           <Typography fontFamily={"Noto Sans Lao"}>ລາຍລະອຽດ</Typography>
           <List>
             {calendarad
-              ? calendarad
-                  .filter((event) => {
-                    const eventDate = dayjs(event.start).startOf("day");
-                    return (
-                      eventDate.isSame(startDate, "day") ||
-                      eventDate.isSame(endDate, "day") ||
-                      (eventDate.isAfter(startDate, "day") &&
-                        eventDate.isBefore(endDate, "day"))
-                    );
-                  })
-                  .map((event, index) => (
-                    <ListItem
-                      key={index}
-                      sx={{
-                        backgroundColor: colors.greenAccent[500],
-                        margin: "10px 0",
-                        borderRadius: "2px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setEventDetailOpen(true);
-                      }}
-                    >
-                      <Box padding={0}>
-                        <Typography
-                          fontFamily={"Noto Sans Lao"}
-                          fontWeight="bold"
-                        >
-                          {event.title}
-                        </Typography>
-                        <Typography fontFamily={"Noto Sans Lao"}>
-                          {formatDate(event.start, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </Typography>
-                      </Box>
-                    </ListItem>
-                  ))
-              : ""}
+              ?.filter((event) => {
+                const eventDate = dayjs(event.start).startOf("day");
+
+                return (
+                  eventDate.isSame(start, "day") ||
+                  eventDate.isSame(end, "day") ||
+                  (eventDate.isAfter(start, "day") &&
+                    eventDate.isBefore(end, "day"))
+                );
+              })
+              .sort((a, b) => {
+                // Compare by dayjs date
+                if (dayjs(a.start).isBefore(dayjs(b.start))) return -1;
+                if (dayjs(a.start).isAfter(dayjs(b.start))) return 1;
+                return 0;
+              })
+              .map((event, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    backgroundColor: colors.greenAccent[500],
+                    margin: "10px 0",
+                    borderRadius: "2px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    setSelectedEvent(event);
+                    setEventDetailOpen(true);
+                  }}
+                >
+                  <Box padding={0}>
+                    <Typography fontFamily={"Noto Sans Lao"} fontWeight="bold">
+                      {event.title}
+                    </Typography>
+                    <Typography fontFamily={"Noto Sans Lao"}>
+                      {formatDate(event.start, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Typography>
+                  </Box>
+                </ListItem>
+              ))}
           </List>
         </Box>
         {/**CALENDAR */}
@@ -372,9 +363,7 @@ getCalen()
         >
           ລາຍລະອຽດ
         </DialogTitle>
-        <DialogContent
-          sx={{ width: "80vh", display: "flex", flexDirection: "column" }}
-        >
+        <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
           <Box
             borderBottom={"1px solid"}
             display={"flex"}
@@ -406,11 +395,11 @@ getCalen()
               ວັນທີ
             </Typography>
             <Typography fontFamily="Noto Sans Lao" alignSelf={"center"}>
-                {formatDate(selectedEvent?.start, {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+              {formatDate(selectedEvent?.start, {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
             </Typography>
           </Box>
 
@@ -443,7 +432,7 @@ getCalen()
             </Typography>
             <Typography fontFamily="Noto Sans Lao" alignSelf={"center"}>
               <Link
-              sx={{color:colors.greenAccent[100]}}
+                sx={{ color: colors.greenAccent[100] }}
                 href={selectedEvent?.extendedProps?.poLink}
                 target="_blank"
                 rel="noopener"
@@ -453,7 +442,7 @@ getCalen()
             </Typography>
           </Box>
         </DialogContent>
-        <DialogActions  sx={{alignSelf:'center'}}>
+        <DialogActions sx={{ alignSelf: "center" }}>
           <Button variant="contained" onClick={() => setEventDetailOpen(false)}>
             Close
           </Button>
