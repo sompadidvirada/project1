@@ -43,6 +43,7 @@ exports.getCalendar = async (req, res) => {
       extendedProps: {
         description: event.discription,
         poLink: event.polink,
+        isSuccess: event.isSuccess,
       },
     }));
 
@@ -103,8 +104,8 @@ exports.deleteCalendar = async (req, res) => {
 
 exports.getCalendarAdmin = async (req, res) => {
   try {
-    const getAllCalendar = await prisma.calendar.findMany()
-        // Convert to FullCalendar format
+    const getAllCalendar = await prisma.calendar.findMany();
+    // Convert to FullCalendar format
     const formattedCalendar = getAllCalendar.map((event) => ({
       id: String(event.id),
       title: event.suplyer,
@@ -113,10 +114,31 @@ exports.getCalendarAdmin = async (req, res) => {
       extendedProps: {
         description: event.discription,
         poLink: event.polink,
+        isSuccess: event.isSuccess,
       },
     }));
 
     res.send(formattedCalendar);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};
+
+exports.updateSuccessPo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const update = await prisma.calendar.update({
+      where:{
+        id: Number(id)
+      }, data: {
+        isSuccess: Boolean(status)
+      }
+    })
+
+    res.send(update);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `server error` });

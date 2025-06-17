@@ -31,13 +31,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 const renderEventContent = (eventInfo) => {
+  const isSuccess = eventInfo.event.extendedProps?.isSuccess;
   return (
     <Box
       sx={{
         fontFamily: "Noto Sans Lao",
         fontSize: "0.9rem",
         color: "#fff",
-        backgroundColor: "#4caf50",
+        backgroundColor: isSuccess ? "#4caf50" : "#2196f3", // green or blue
         borderRadius: "4px",
         padding: "2px 4px",
         overflow: "hidden",
@@ -229,7 +230,10 @@ const CalendarForAdmin = () => {
                 <ListItem
                   key={index}
                   sx={{
-                    backgroundColor: colors.greenAccent[500],
+                    backgroundColor: event.extendedProps?.isSuccess
+                      ? colors.greenAccent[500]
+                      : colors.blueAccent[500],
+
                     margin: "10px 0",
                     borderRadius: "2px",
                     cursor: "pointer",
@@ -421,7 +425,12 @@ const CalendarForAdmin = () => {
             </Typography>
           </Box>
 
-          <Box display={"flex"} flexDirection={"column"}>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            borderBottom={"1px solid"}
+            p={2}
+          >
             <Typography
               fontFamily={"Noto Sans Lao"}
               alignSelf={"center"}
@@ -439,6 +448,31 @@ const CalendarForAdmin = () => {
               >
                 {selectedEvent?.extendedProps?.poLink}
               </Link>
+            </Typography>
+          </Box>
+          <Box
+            display={"flex"}
+            flexDirection={"column"}
+            borderBottom={"1px solid"}
+            p={2}
+          >
+            <Typography
+              fontFamily={"Noto Sans Lao"}
+              alignSelf={"center"}
+              fontSize={20}
+              p={2}
+            >
+              ສະຖານະການຈັດສົ່ງ
+            </Typography>
+            <Typography
+              fontFamily={"Noto Sans Lao"}
+              alignSelf={"center"}
+              fontSize={15}
+              color={selectedEvent.extendedProps.isSuccess === "false" ? "rgba(255, 0, 0, 0.64)" : "rgba(21, 255, 0, 0.6)"}
+            >
+              {selectedEvent?.extendedProps?.isSuccess === "false"
+                ? "ຍັງບໍ່ປິດ PO"
+                : "ປິດ PO ແລ້ວ"}
             </Typography>
           </Box>
         </DialogContent>
