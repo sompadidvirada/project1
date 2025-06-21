@@ -131,16 +131,44 @@ exports.updateSuccessPo = async (req, res) => {
     const { status } = req.body;
 
     const update = await prisma.calendar.update({
-      where:{
-        id: Number(id)
-      }, data: {
-        isSuccess: Boolean(status)
-      }
-    })
+      where: {
+        id: Number(id),
+      },
+      data: {
+        isSuccess: Boolean(status),
+      },
+    });
 
     res.send(update);
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: `server error` });
+  }
+};
+
+exports.detailupdate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { discription, polink } = req.body;
+
+
+    console.log(discription, polink)
+    if ((!discription, !polink)) {
+      return res.status(404).json({ message: `Data Not Found` });
+    }
+
+    const update = await prisma.calendar.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        discription: discription,
+        polink: polink,
+      },
+    });
+    res.send(update);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `Server error` });
   }
 };

@@ -19,5 +19,15 @@ export const deleteCalendar = (id) => {
 };
 
 export const getCalendarAdmin = () => {
-    return axios.get(`${process.env.REACT_APP_API_URL}/getcalendaradmin`)
-}
+  return axios.get(`${process.env.REACT_APP_API_URL}/getcalendaradmin`);
+};
+
+export const updateSuccessPo = (id, status) => {
+  return axios.put(`${process.env.REACT_APP_API_URL}/updatesuccesspo/${id}`, {
+    status: status,
+  });
+};
+
+export const detailUpdate = (id, form) => {
+  return axios.put(`${process.env.REACT_APP_API_URL}/detailupdate/${id}`, form);
+};

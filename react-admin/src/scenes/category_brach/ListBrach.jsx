@@ -76,7 +76,7 @@ const ListBrach = () => {
       sx={{ textAlign: "center" }}
       overflow="auto"
     >
-      <Header title="Category List" />
+      <Header title="Branch List" />
       <Box
         display="flex"
         flexDirection="column"

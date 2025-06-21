@@ -51,12 +51,21 @@ app.options("*", cors()); // handle preflight
 app.get("/uploads/:imageName", (req, res) => {
   const { imageName } = req.params;
   const imagePath = path.join(__dirname, "public/uploads", imageName);
+
+  const sendCachedFile = (filePath) => {
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    res.removeHeader("Last-Modified");
+    res.removeHeader("ETag");
+    res.sendFile(filePath, { headers: { "Cache-Control": "public, max-age=31536000, immutable" } });
+  };
+
   if (fs.existsSync(imagePath)) {
-    res.sendFile(imagePath);
+    sendCachedFile(imagePath);
   } else {
-    res.sendFile(path.join(__dirname, defaultImage));
+    sendCachedFile(path.join(__dirname, defaultImage));
   }
 });
+
 
 
 readdirSync("./routes").map((item) =>

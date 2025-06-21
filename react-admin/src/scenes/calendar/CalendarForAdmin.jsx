@@ -6,7 +6,15 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { Box, List, ListItem, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  List,
+  ListItem,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import Header from "../../component/Header";
 import { tokens } from "../../theme";
 import Button from "@mui/material/Button";
@@ -21,8 +29,10 @@ import useBakeryStore from "../../zustand/storage";
 import {
   createCalendar,
   deleteCalendar,
+  detailUpdate,
   getCalendarAdmin,
   updateCalendar,
+  updateSuccessPo,
 } from "../../api/calendar";
 import { useEffect } from "react";
 import dayjs from "dayjs";
@@ -69,11 +79,21 @@ const CalendarForAdmin = () => {
     description: "",
     poLink: "",
   });
+  const [selectedEventInfUllCalendar, setSelectedEventInfUllCalendar] =
+    useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [eventDetailOpen, setEventDetailOpen] = useState(false);
   const [startDate, setStartDate] = useState(dayjs().startOf("month"));
   const [endDate, setEndDate] = useState(dayjs().endOf("month"));
-
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editEventData, setEditEventData] = useState({
+    id: "",
+    title: "",
+    description: "",
+    poLink: "",
+  });
+  const [selectedDateInfo, setSelectedDateInfo] = useState(null); // for storing the calendar selection
   const start = startDate.startOf("day");
   const end = endDate.startOf("day");
 
@@ -88,9 +108,8 @@ const CalendarForAdmin = () => {
   useEffect(() => {
     getCalen();
   }, []);
-  const [selectedDateInfo, setSelectedDateInfo] = useState(null); // for storing the calendar selection
 
-  console.log(calendarad);
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -135,25 +154,9 @@ const CalendarForAdmin = () => {
     }
   };
 
-  const handleEventClick = async (selected) => {
-    const confirmed = window.confirm(`ຢືນຢັນການລົບ`);
-    if (confirmed) {
-      try {
-        const eventId = selected.event.id;
-
-        // 👉 Call your delete API here
-        await deleteCalendar(eventId); // You'll define this in your `api/calendar.js`
-
-        // 👉 Remove the event from the calendar UI
-        selected.event.remove();
-
-        // 👉 Refresh the calendar state from backend
-        getCalen();
-      } catch (error) {
-        console.error("Failed to delete event:", error);
-        alert("ລົບເຫດການບໍ່ສຳເລັດ");
-      }
-    }
+  const handleEventClick = (selected) => {
+    setSelectedEventInfUllCalendar(selected.event._def);
+    setDialogOpen(true);
   };
 
   const handleInputChange = (field) => (e) => {
@@ -176,6 +179,63 @@ const CalendarForAdmin = () => {
 
     // Refresh events
     getCalen();
+  };
+
+  const handleUpdateStatusEvent = async (status) => {
+    try {
+      const updated = await updateSuccessPo(selectedEvent?.id, status);
+      console.log("Updated:", updated.data);
+
+      setCalendarad((prev) => {
+        const updatedList = prev.map((event) =>
+          event.id === String(updated?.data?.id)
+            ? {
+                ...event,
+                extendedProps: {
+                  ...event.extendedProps,
+                  isSuccess: updated?.data?.isSuccess,
+                },
+              }
+            : event
+        );
+        return [...updatedList]; // force change detection
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleEditEvent = () => {
+    setEditEventData({
+      id: selectedEventInfUllCalendar?.publicId,
+      title: selectedEventInfUllCalendar?.title,
+      description:
+        selectedEventInfUllCalendar?.extendedProps?.description || "",
+      linkPO: selectedEventInfUllCalendar?.extendedProps?.poLink,
+    });
+
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateEventSubmit = async () => {
+    try {
+      // Call your backend update function (you may need to create one)
+      const updated = await detailUpdate(editEventData.id, {
+        title: editEventData.title,
+        description: editEventData.description,
+        polink: editEventData.linkPO
+      });
+
+      // Refresh calendar data
+
+      console.log(updated)
+      getCalen();
+
+      setEditModalOpen(false);
+    } catch (err) {
+      console.error("Failed to update:", err);
+      alert("ບໍ່ສາມາດບັນທຶກໄດ້");
+    }
   };
 
   return (
@@ -228,7 +288,7 @@ const CalendarForAdmin = () => {
               })
               .map((event, index) => (
                 <ListItem
-                  key={index}
+                  key={event.id}
                   sx={{
                     backgroundColor: event.extendedProps?.isSuccess
                       ? colors.greenAccent[500]
@@ -282,7 +342,7 @@ const CalendarForAdmin = () => {
             eventContent={renderEventContent}
             dayMaxEvents={true}
             select={handleDateClick}
-            eventClick={handleEventClick}
+            eventClick={(events) => handleEventClick(events)}
             eventsSet={(events) => setCurrentEvents(events)}
             events={calendarad}
             eventDrop={handleEventDrop} // Add this line
@@ -468,17 +528,164 @@ const CalendarForAdmin = () => {
               fontFamily={"Noto Sans Lao"}
               alignSelf={"center"}
               fontSize={15}
-              color={selectedEvent.extendedProps.isSuccess === "false" ? "rgba(255, 0, 0, 0.64)" : "rgba(21, 255, 0, 0.6)"}
+              color={
+                selectedEvent?.extendedProps?.isSuccess === false
+                  ? "rgba(255, 0, 0, 0.64)"
+                  : "rgba(21, 255, 0, 0.6)"
+              }
             >
-              {selectedEvent?.extendedProps?.isSuccess === "false"
+              {selectedEvent?.extendedProps?.isSuccess === false
                 ? "ຍັງບໍ່ປິດ PO"
                 : "ປິດ PO ແລ້ວ"}
             </Typography>
+          </Box>
+          <Box display={"flex"} flexDirection={"column"} p={2}>
+            <Typography
+              fontFamily={"Noto Sans Lao"}
+              alignSelf={"center"}
+              fontSize={20}
+              p={2}
+            >
+              ອັປເດດສະຖານະ
+            </Typography>
+            {selectedEvent?.extendedProps?.isSuccess === false ? (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleUpdateStatusEvent(true);
+                  setEventDetailOpen(false);
+                }}
+                sx={{
+                  fontFamily: "Noto Sans Lao",
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  width: "30%",
+                  alignSelf: "center",
+                }}
+                color="success"
+              >
+                ຈັດສົ່ງແລ້ວ
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => {
+                  handleUpdateStatusEvent(false);
+                  setEventDetailOpen(false);
+                }}
+                sx={{
+                  fontFamily: "Noto Sans Lao",
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  width: "30%",
+                  alignSelf: "center",
+                }}
+                color="error"
+              >
+                ຍັງບໍ່ທັນຈັດສົ່ງ
+              </Button>
+            )}
           </Box>
         </DialogContent>
         <DialogActions sx={{ alignSelf: "center" }}>
           <Button variant="contained" onClick={() => setEventDetailOpen(false)}>
             Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle sx={{ fontFamily: "Noto Sans Lao" }}>ຈັດການ</DialogTitle>
+        <DialogContent>
+          <Typography fontFamily="Noto Sans Lao">
+            ກະລຸນາ ເລືອກຮູບແບບການຈັດການບໍລິສັດ{" "}
+            {selectedEventInfUllCalendar?.title}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            sx={{ fontFamily: "Noto Sans Lao" }}
+            variant="contained"
+            onClick={() => {
+              setDialogOpen(false);
+              // trigger your edit logic here
+              handleEditEvent();
+            }}
+          >
+            ແກ້ໄຂ
+          </Button>
+          <Button
+            sx={{ fontFamily: "Noto Sans Lao" }}
+            variant="contained"
+            onClick={async () => {
+              try {
+                await deleteCalendar(selectedEventInfUllCalendar?.publicId);
+                setDialogOpen(false);
+                setSelectedEvent(null);
+                getCalen(); // refresh from backend
+              } catch (error) {
+                console.error("Delete failed:", error);
+              }
+            }}
+            color="error"
+          >
+            ລົບ
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle fontFamily="Noto Sans Lao">ແກ້ໄຂລາຍລະອຽດ</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            margin="dense"
+            label="ຊື່ເຫດການ"
+            value={editEventData.title}
+            onChange={(e) =>
+              setEditEventData({ ...editEventData, title: e.target.value })
+            }
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="ລາຍລະອຽດ"
+            value={editEventData.description}
+            onChange={(e) =>
+              setEditEventData({
+                ...editEventData,
+                description: e.target.value,
+              })
+            }
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="ລິ້ງ PO"
+            value={editEventData.linkPO}
+            onChange={(e) =>
+              setEditEventData({
+                ...editEventData,
+                linkPO: e.target.value,
+              })
+            }
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditModalOpen(false)} color="inherit">
+            ຍົກເລີກ
+          </Button>
+          <Button
+            onClick={handleUpdateEventSubmit}
+            color="primary"
+            variant="contained"
+          >
+            ບັນທຶກ
           </Button>
         </DialogActions>
       </Dialog>

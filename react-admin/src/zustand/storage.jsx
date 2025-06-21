@@ -73,24 +73,40 @@ const BakeryStore = (set, get) => ({
   },
   getCategory: async () => {
     const token = get().token;
-    const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}/getcategorys`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getcategorys`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      set({
+        categorys: res.data,
+      });
+    } catch (err) {
+      if (err.respone?.status === 401) {
+        console.warn("Token expired or unauthorized. Logging out.");
+      } else {
+        console.error("Failed to fetch categories:", err.message);
       }
-    );
-    set({
-      categorys: res.data,
-    });
+    }
   },
   getProducts: async () => {
     const token = get().token;
-    const res = await getProduct(token);
-    set({
-      products: res.data,
-    });
+    try {
+      const res = await getProduct(token);
+      set({
+        products: res.data,
+      });
+    } catch (err) {
+      if (err.respone?.status === 401) {
+        console.warn("Token expired or unauthorized. Logging out.");
+      } else {
+        console.error("Failed to fetch categories:", err.message);
+      }
+    }
   },
   getBrach: async () => {
     const token = get().token;
@@ -105,12 +121,18 @@ const BakeryStore = (set, get) => ({
       );
       set({ brach: res.data });
     } catch (err) {
-      console.error("Failed to fetch brachs:", err.message);
+      if (err.respone?.status === 401) {
+        console.warn("Token expired or unauthorized. Logging out.");
+      } else {
+        console.error("Failed to fetch categories:", err.message);
+      }
     }
-  }, getCalendar: async (id) => {
+  },
+  getCalendar: async (id) => {
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/getcalendar/${id}`);
+        `${process.env.REACT_APP_API_URL}/getcalendar/${id}`
+      );
       set({ calendar: res.data });
     } catch (err) {
       console.error("Failed to fetch brachs:", err.message);
@@ -136,6 +158,21 @@ const BakeryStore = (set, get) => ({
     } catch (error) {
       console.error("Error updating user:", error);
     }
+  },
+  updateCalendarEventStatus: (updatedEvent) => {
+    set((state) => ({
+      calendar: state.calendar.map((event) =>
+        String(event.id) === String(updatedEvent.id)
+          ? {
+              ...event,
+              extendedProps: {
+                ...event.extendedProps,
+                isSuccess: updatedEvent.isSuccess,
+              },
+            }
+          : event
+      ),
+    }));
   },
 });
 
