@@ -13,8 +13,6 @@ const SelectStatus = ({ setFormUpdateAviable, row, formUpdateAviable }) => {
       brachId: row.brachId,
       status: value,
     });
-
-    console.log(formUpdateAviable)
   };
 
   return (

@@ -22,7 +22,7 @@ const io = new Server(server, {
 
 
 
-const defaultImage = "public/uploads/nigler.png";
+
 
 app.use(express.json({ limit: `100mb` }));
 app.use(morgan("dev"));
@@ -46,8 +46,9 @@ io.on("connect", (socket) => {
 
 app.options("*", cors()); // handle preflight
 
-
 // Serve uploaded images with fallback
+const defaultImage = "public/uploads/nigler.png";
+
 app.get("/uploads/:imageName", (req, res) => {
   const { imageName } = req.params;
   const imagePath = path.join(__dirname, "public/uploads", imageName);

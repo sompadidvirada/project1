@@ -153,6 +153,8 @@ const Sidebar = () => {
     setOpen(false);
   };
 
+  console.log(editProflie)
+
   return (
     <Box
       sx={{
@@ -214,7 +216,7 @@ const Sidebar = () => {
                     )
                   }
                   src={`${process.env.REACT_APP_API_URL}/uploads/${
-                    user.image || "nigler.png"
+                    user?.image || "nigler.png"
                   }`}
                   style={{ cursor: "pointer", borderRadius: "50%", objectFit:"cover"}}
                 />
@@ -226,11 +228,11 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  {user.firstname + ` ` + user.lastname || "EMTY NAME"}
+                  {user?.firstname + ` ` + user?.lastname || "EMTY NAME"}
                 </Typography>
                 <Box display="flex" justifyContent="center">
                   <Typography variant="h5" color={colors.greenAccent[500]}>
-                    {user.role || "EMTY"}
+                    {user?.role || "EMTY"}
                   </Typography>
                   <ManageAccountsIcon
                     onClick={() => handleOpen(user)}

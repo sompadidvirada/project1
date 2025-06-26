@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   TextField,
@@ -119,6 +119,7 @@ const Product = () => {
       };
     }),
   }));
+
 
   const handleSubmitEdit = async () => {
     // Create a FormData object to send the data and image together
@@ -256,38 +257,39 @@ const Product = () => {
       headerName: "STATUS",
       flex: 0.2,
     },
-    ...(isAdmin
-      ? [
-          {
-            field: "manage",
-            headerName: "MANAGE",
-            renderCell: (params) => (
-              <Box display="flex" justifyContent="space-around" width="100%">
-                <EditIcon
-                  onClick={() => handleOpen(params.row)}
-                  sx={{
-                    cursor: "pointer",
-                    color: colors.blueAccent[500],
-                    "&:hover": {
-                      color: colors.blueAccent[700],
-                    },
-                  }}
-                />
-                <DeleteIcon
-                  onClick={() => handleDelete(params.row.id)}
-                  sx={{
-                    cursor: "pointer",
-                    color: colors.redAccent[500],
-                    "&:hover": {
-                      color: colors.redAccent[700],
-                    },
-                  }}
-                />
-              </Box>
-            ),
-          },
-        ]
-      : []),
+    {
+      field: "manage",
+      headerName: "MANAGE",
+      renderCell: (params) => (
+        <Box display="flex" justifyContent="space-around" width="100%">
+          {/* Show EditIcon to everyone */}
+          <EditIcon
+            onClick={() => handleOpen(params.row)}
+            sx={{
+              cursor: "pointer",
+              color: colors.blueAccent[500],
+              "&:hover": {
+                color: colors.blueAccent[700],
+              },
+            }}
+          />
+
+          {/* Show DeleteIcon only if user is admin */}
+          {isAdmin && (
+            <DeleteIcon
+              onClick={() => handleDelete(params.row.id)}
+              sx={{
+                cursor: "pointer",
+                color: colors.redAccent[500],
+                "&:hover": {
+                  color: colors.redAccent[700],
+                },
+              }}
+            />
+          )}
+        </Box>
+      ),
+    }
   ];
 
   useEffect(() => {

@@ -69,11 +69,9 @@ model avilableproduct {
   id            Int       @id @unique @default(autoincrement())
   aviableStatus Boolean   @default(true)
   updateAt      DateTime? @updatedAt
-
   // Relations
   product   product @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
-
   brach   brach @relation(fields: [brachId], references: [id], onDelete: Cascade)
   brachId Int
 

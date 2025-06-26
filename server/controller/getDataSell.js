@@ -78,7 +78,6 @@ exports.getTotalSell = async (req, res) => {
 
     end.setHours(23, 59, 59, 999);
 
-    console.log(start, end);
 
     const sendTrack = await prisma.trackingsend.findMany({
       where: {
@@ -299,7 +298,6 @@ const generateUniqueColors = (count) => {
 exports.dataTrack = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
-    console.log(startDate, endDate);
 
     const start = new Date(startDate);
     const end = new Date(endDate);

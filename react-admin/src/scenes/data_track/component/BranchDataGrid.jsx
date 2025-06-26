@@ -78,24 +78,24 @@ const BranchDataGrid = ({ branch, columns }) => {
       <Header
         title={
           <Box display={"flex"} gap={3} justifySelf={"center"}>
-            <Typography variant="laoText" sx={{ fontSize: 30 }}>
+            <Typography variant="laoText" sx={{ fontSize: 25 }}>
               {`${branch?.name} (Expired %: ${branch?.branchPercent || ""})`}
             </Typography>
             <Typography
               variant="laoText"
-              sx={{ fontSize: 30, color: "rgb(83, 129, 255)" }}
+              sx={{ fontSize: 25, color: "rgb(83, 129, 255)" }}
             >
               SEND {branch?.totalSend.toLocaleString() || ""} ກີບ
             </Typography>
             <Typography
               variant="laoText"
-              sx={{ fontSize: 30, color: "rgb(0, 255, 136)" }}
+              sx={{ fontSize: 25, color: "rgb(0, 255, 136)" }}
             >
               SELL {branch?.totalSell.toLocaleString() || ""} ກີບ
             </Typography>
             <Typography
               variant="laoText"
-              sx={{ fontSize: 30, color: "rgb(255, 40, 33)" }}
+              sx={{ fontSize: 25, color: "rgb(255, 40, 33)" }}
             >
               EXP {branch?.totalExp?.toLocaleString() || ""} ກີບ
             </Typography>
