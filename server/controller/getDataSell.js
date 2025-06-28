@@ -9,6 +9,10 @@ const generateColor = (name) => {
   return `hsl(${hue}, 70%, 50%)`;
 };
 
+{
+  /** BAR CHART  */
+}
+
 exports.getSalesByDateRange = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -65,6 +69,117 @@ exports.getSalesByDateRange = async (req, res) => {
   }
 };
 
+exports.barChartSend = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    // Convert startDate and endDate to proper Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Ensure endDate includes the entire last day
+
+    // Fetch sales data with branch & product details
+    const salesData = await prisma.trackingsend.findMany({
+      where: {
+        sendAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      include: {
+        brach: true, // Get branch details
+        product: true, // Get product details
+      },
+    });
+
+    // Transform data into Nivo format
+    const transformedData = {};
+
+    salesData.forEach(({ brach, product, sendCount }) => {
+      const branchName = brach.name;
+      const productName = product.name;
+
+      // Initialize branch if not exists
+      if (!transformedData[branchName]) {
+        transformedData[branchName] = { country: branchName };
+      }
+
+      // Sum up the sell count for the same product in the same branch
+      if (!transformedData[branchName][productName]) {
+        transformedData[branchName][productName] = 0;
+      }
+      transformedData[branchName][productName] += sendCount;
+
+      // Assign a consistent color based on product name
+      if (!transformedData[branchName][`${productName}Color`]) {
+        transformedData[branchName][`${productName}Color`] =
+          generateColor(productName);
+      }
+    });
+
+    // Convert the transformed object into an array for Nivo
+    res.json(Object.values(transformedData));
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};
+exports.barChartExp = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    // Convert startDate and endDate to proper Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Ensure endDate includes the entire last day
+
+    // Fetch sales data with branch & product details
+    const salesData = await prisma.trackingexp.findMany({
+      where: {
+        expAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      include: {
+        brach: true, // Get branch details
+        product: true, // Get product details
+      },
+    });
+
+    // Transform data into Nivo format
+    const transformedData = {};
+
+    salesData.forEach(({ brach, product, expCount }) => {
+      const branchName = brach.name;
+      const productName = product.name;
+
+      // Initialize branch if not exists
+      if (!transformedData[branchName]) {
+        transformedData[branchName] = { country: branchName };
+      }
+
+      // Sum up the sell count for the same product in the same branch
+      if (!transformedData[branchName][productName]) {
+        transformedData[branchName][productName] = 0;
+      }
+      transformedData[branchName][productName] += expCount;
+
+      // Assign a consistent color based on product name
+      if (!transformedData[branchName][`${productName}Color`]) {
+        transformedData[branchName][`${productName}Color`] =
+          generateColor(productName);
+      }
+    });
+
+    // Convert the transformed object into an array for Nivo
+    res.json(Object.values(transformedData));
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: `server error` });
+  }
+};
+
 exports.getTotalSell = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -77,7 +192,6 @@ exports.getTotalSell = async (req, res) => {
     }
 
     end.setHours(23, 59, 59, 999);
-
 
     const sendTrack = await prisma.trackingsend.findMany({
       where: {
@@ -232,17 +346,6 @@ exports.getSellLineChart = async (req, res) => {
   }
 };
 
-// Function to generate unique HSL colors
-const generateUniqueColorsLine = (count) => {
-  const colors = [];
-  const step = 360 / count; // Evenly distribute colors around the HSL wheel
-  for (let i = 0; i < count; i++) {
-    const hue = Math.floor(i * step); // Spread hues evenly
-    colors.push(`hsl(${hue}, 70%, 50%)`);
-  }
-  return colors;
-};
-
 exports.getDataPieChart = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -372,7 +475,9 @@ exports.dataTrack = async (req, res) => {
           totalPriceSend: product.price * totalSend,
           totalPriceSell: product.sellprice * totalSell,
           totalPriceExp: product.price * totalExp,
-          availableProductCount: availableProduct?.aviableStatus ? availableProduct.count : 0, // Optional chaining in case it's undefined
+          availableProductCount: availableProduct?.aviableStatus
+            ? availableProduct.count
+            : 0, // Optional chaining in case it's undefined
         };
       });
 

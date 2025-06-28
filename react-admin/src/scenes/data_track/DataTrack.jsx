@@ -94,7 +94,6 @@ const DataTrack = () => {
     });
   }, [dataTrack, filterData]);
 
-
   const columns = useMemo(
     () => [
       { field: "id", headerName: "ID", flex: 0.2 },

@@ -13,12 +13,15 @@ import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import SsidChartIcon from "@mui/icons-material/SsidChart";
 import PieChart from "../../component/PieChart";
+import BarChartSend from "../../component/BarChartSend";
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const {
     data = [],
+    dataSend = [],
+    dataExp = [],
     token,
     queryForm,
     getBrach,
@@ -57,7 +60,7 @@ const Dashboard = () => {
     <Box m="20px" sx={{
       width: "98%",
       height: "100vw",
-      overflow: "scroll"
+      overflow: "none"
     }}>
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -245,16 +248,56 @@ const Dashboard = () => {
 
         <Box
           gridColumn="span 12"
-          gridRow="span 2"
+          gridRow="span 4"
           backgroundColor={colors.primary[400]}
           textAlign="center"
         >
-          <Typography variant="laoText" fontWeight="600">
+          <Typography variant="laoText" fontWeight="600" fontSize={15}>
             ຍອດຂາຍແຕ່ລະສາຂາ
           </Typography>
-          <Box height="260px" mt="-20px">
+          <Box height="100%" mt="-20px">
             {data && data.length > 0 ? (
               <BarChart isDashboard={true} data={data} />
+            ) : (
+              <Typography variant="h2" marginTop="80px">
+                No data available please select date first...
+              </Typography>
+            )}
+          </Box>
+        </Box>
+
+        <Box
+          gridColumn="span 12"
+          gridRow="span 4"
+          backgroundColor={colors.primary[400]}
+          textAlign="center"
+        >
+          <Typography variant="laoText" fontWeight="600" fontSize={15}>
+            ຍອດໝົດຈັດສົ່ງແຕ່ລະສາຂາ
+          </Typography>
+          <Box height="100%" mt="-20px">
+            {dataSend && dataSend.length > 0 ? (
+              <BarChartSend isDashboard={true} data={dataSend} />
+            ) : (
+              <Typography variant="h2" marginTop="80px">
+                No data available please select date first...
+              </Typography>
+            )}
+          </Box>
+        </Box>
+
+        <Box
+          gridColumn="span 12"
+          gridRow="span 4"
+          backgroundColor={colors.primary[400]}
+          textAlign="center"
+        >
+          <Typography variant="laoText" fontWeight="600" fontSize={15}>
+            ຍອດໝົດອາຍຸແຕ່ລະສາຂາ
+          </Typography>
+          <Box height="100%" mt="-20px">
+            {dataExp && dataExp.length > 0 ? (
+              <BarChartSend isDashboard={true} data={dataExp} />
             ) : (
               <Typography variant="h2" marginTop="80px">
                 No data available please select date first...

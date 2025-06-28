@@ -3,18 +3,35 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { getDateSell } from "../../api/getDate";
+import { barChartExp, barChartSend, getDateSell } from "../../api/getDate";
 import useBakeryStore from "../../zustand/storage";
 import { getDataLineChart, getDataPieChart, getDataTrack, getTotalData } from "../../api/tracking";
 
 export default function Calendar() {
-  const { queryForm, setQueryForm, setData, setDataLine, setDataPie, setDataTrack, setTotalData } = useBakeryStore();
+  const { queryForm, setQueryForm, setData, setDataLine, setDataPie, setDataTrack, setTotalData, setDataSend, setDataExp } = useBakeryStore();
   const token = useBakeryStore((state)=>state.token)
 
   const fetchDate = async () => {
     try {
       const getDate = await getDateSell(queryForm, token);
       setData(getDate.data); // <-- Save data in Zustand
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+  const fetchDateSend = async () => {
+    try {
+      const getDate = await barChartSend(queryForm, token);
+      console.log(getDate)
+      setDataSend(getDate.data); // <-- Save data in Zustand
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
+  };
+  const fetchDateExp = async () => {
+    try {
+      const getDate = await barChartExp(queryForm, token);
+      setDataExp(getDate.data); // <-- Save data in Zustand
     } catch (err) {
       console.error("Error fetching data:", err);
     }
@@ -64,6 +81,8 @@ export default function Calendar() {
   React.useEffect(() => {
     if (queryForm.startDate && queryForm.endDate) {
       fetchDate();
+      fetchDateExp()
+      fetchDateSend()
       fecthDataLine()
       fecthDataPie()
       fecthDataTrack()

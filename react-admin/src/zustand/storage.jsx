@@ -11,6 +11,8 @@ const BakeryStore = (set, get) => ({
   products: null,
   brach: null,
   data: null,
+  dataSend: null,
+  dataExp: null,
   dataLine: null,
   dataPie: null,
   dataTrack: null,
@@ -32,6 +34,12 @@ const BakeryStore = (set, get) => ({
   },
   setData: (newData) => {
     set({ data: newData }); // <-- Add function to update data
+  },
+  setDataSend: (newData) => {
+    set({ dataSend: newData }); // <-- Add function to update data
+  },
+  setDataExp: (newData) => {
+    set({ dataExp: newData }); // <-- Add function to update data
   },
   setDataLine: (newData) => {
     set({ dataLine: newData }); // <-- Add function to update data

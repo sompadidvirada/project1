@@ -20,7 +20,7 @@ const BarChart = ({ isDashboard = false, data }) => {
   // ✅ Get highest total SellCount across all branches
   const maxValue =
     chartData.length > 0
-      ?  Math.max(
+      ? Math.max(
           ...chartData.map((item) =>
             keys.reduce((sum, key) => sum + (item[key] || 0), 0)
           )
@@ -31,6 +31,11 @@ const BarChart = ({ isDashboard = false, data }) => {
     <ResponsiveBar
       data={chartData}
       maxValue={maxValue}
+      layout="horizontal"
+      padding={0.05}
+      innerPadding={1}
+      labelSkipWidth={ isDashboard ? 20 : 20}
+      
       theme={{
         // added
         axis: {
@@ -61,7 +66,7 @@ const BarChart = ({ isDashboard = false, data }) => {
         legends: {
           text: {
             fill: colors.grey[100],
-            fontSize: isDashboard ? 10 : 15,
+            fontSize: isDashboard ? 15 : 25,
             fontFamily: '"Noto Serif Lao", serif', // Custom font for legend text
           },
         },
@@ -82,8 +87,7 @@ const BarChart = ({ isDashboard = false, data }) => {
       }}
       keys={productNames ? productNames : productSecon}
       indexBy="country"
-      margin={{ top: 20, right: 180, bottom: 50, left: 60 }}
-      padding={0.6}
+      margin={{ top: 50, right: 15, bottom: 50, left: 140 }}
       valueScale={{ type: "linear" }}
       indexScale={{ type: "band", round: true }}
       colors={{ scheme: "nivo" }}
@@ -127,72 +131,22 @@ const BarChart = ({ isDashboard = false, data }) => {
       }}
       axisTop={null}
       axisRight={null}
-      axisBottom={{
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legendPosition: "middle",
-        legendOffset: 32,
-        truncateTickAt: 0,
-      }}
+      axisBottom={null}
       axisLeft={{
         tickSize: 9,
         tickPadding: 5,
         tickRotation: 1,
-        legend: "BAKERY",
+        legend: null,
         legendPosition: "middle",
         legendOffset: 15,
         truncateTickAt: 0,
       }}
       enableTotals={true}
       totalsOffset={28}
-      labelSkipHeight={isDashboard ? 90 : 0}
       labelTextColor={{
         from: "color",
         modifiers: [["darker", "6"]],
       }}
-      legends={[
-        {
-          dataFrom: "keys",
-          anchor: "right",
-          direction: "column",
-          justify: false,
-          translateX: isDashboard ? 90 : 118,
-          translateY: 20,
-          itemsSpacing: 2,
-          itemWidth: isDashboard ? 80 : 83,
-          itemHeight: isDashboard ? 14 : 41,
-          itemDirection: "left-to-right",
-          itemOpacity: 0.85,
-          symbolSize: 19,
-          effects: [
-            {
-              on: "hover",
-              style: {
-                itemOpacity: 1,
-              },
-            },
-          ],
-          // Add custom style here for text
-          itemTextColor: colors.grey[100], // Default text color
-          itemText: (label) => (
-            <Typography
-              variant="laoText"
-              fontWeight="600"
-              sx={{
-                padding: "30px 30px 0 30px",
-                mb: "5px",
-                mt: "0",
-                whiteSpace: "normal", // Allow text to wrap
-                wordWrap: "break-word", // Break long words if necessary
-                overflowWrap: "break-word", // Ensure long text fits inside the container
-              }}
-            >
-              {label}
-            </Typography>
-          ),
-        },
-      ]}
       motionConfig={{
         mass: 13,
         tension: 95,

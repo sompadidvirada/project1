@@ -377,6 +377,20 @@ const Sidebar = () => {
               setSelected={setSelected}
             />
             <Item
+              title="Bar Chart Send"
+              to="/admin/barsend"
+              icon={<BarChartOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Bar Chart EXP"
+              to="/admin/barexp"
+              icon={<BarChartOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
               title="Pie Chart"
               to="/admin/pie"
               icon={<PieChartOutlineOutlinedIcon />}

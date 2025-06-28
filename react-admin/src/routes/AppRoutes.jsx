@@ -25,6 +25,8 @@ import DataTrack from "../scenes/data_track/DataTrack";
 import TotalDataTrack from "../scenes/totalDataTrack/TotalDataTrack";
 import CalendarForAdmin from "../scenes/calendar/CalendarForAdmin";
 import Success from "../scenes/pie/Success";
+import BarSend from "../scenes/barSend/BarSend";
+import BarExp from "../scenes/barExp/BarExp"
 
 const router = createBrowserRouter([
   {
@@ -60,6 +62,8 @@ const router = createBrowserRouter([
       { path: "geography", element: <GeographyChart /> },
       { path: "datatrack", element: <DataTrack /> },
       { path: "totaldatatrack", element: <TotalDataTrack /> },
+      { path: "barsend", element: <BarSend /> },
+      { path: "barexp", element: <BarExp /> },
       { path: "success", element: <Success /> }
     ],
   },
